@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sekthor/puzzleinvite/internal/domain"
 )
 
 func (s *Server) HomeHandler(c *gin.Context) {
@@ -13,14 +14,29 @@ func (s *Server) HomeHandler(c *gin.Context) {
 }
 
 func (s *Server) QuizHandler(c *gin.Context) {
+
+	id := c.Param("id")
+
+	quiz, err := s.repo.GetQuiz(id)
+
+	if err != nil {
+		c.HTML(http.StatusNotFound, "404.html", gin.H{
+			"Title": "Quiz",
+		})
+		return
+	}
+
 	c.HTML(http.StatusOK, "quiz.html", gin.H{
 		"Title": "Quiz",
+		"Quiz":  quiz,
 	})
 }
 
 func (s *Server) NewQuizHandler(c *gin.Context) {
 	var req struct {
-		Title string `form:"title" json:"title"`
+		Title     string            `form:"title" json:"title"`
+		Secret    string            `form:"secret" json:"secret"`
+		Questions []domain.Question `json:"questions"`
 	}
 
 	if err := c.Bind(&req); err != nil {
@@ -28,8 +44,18 @@ func (s *Server) NewQuizHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"title": req.Title})
+	quiz, err := domain.NewQuiz(req.Title, req.Secret, req.Questions)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
 
+	if err := s.repo.Save(quiz); err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	c.JSON(http.StatusOK, &quiz)
 }
 
 func (s *Server) NewQuizFormHandler(c *gin.Context) {
