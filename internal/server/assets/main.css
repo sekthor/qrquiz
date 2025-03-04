@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --pixelsize: 12px
+}
+
+* {
+    font-family: Roboto, sans-serif;
+}
+
+table, td, th {
+    border-collapse: collapse;
+    border: 1px #f0f0f0 solid;
+}
+
+.pixel {
+    width: var(--pixelsize);
+    height: var(--pixelsize);
+}
+
+.dark {
+    background-color: black;
+    border-color: black;
+}

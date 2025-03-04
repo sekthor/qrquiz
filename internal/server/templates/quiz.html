@@ -3,10 +3,10 @@
 <h1>{{ .Quiz.Title }}</h1>
 
 <table>
-{{ range .Quiz.Initial }}
+{{ range $y, $row := .Quiz.Initial }}
     <tr>
-    {{ range . }}
-        <td>0</td>
+    {{ range $x, $pixel := $row }}
+        <td class="pixel {{ if $pixel }}dark{{ end }}" id="{{ $x }}-{{ $y }}"></td>
     {{ end }}
     </tr>
 {{ end }}
