@@ -14,7 +14,8 @@ type Server struct {
 
 func (s *Server) Run() error {
 
-	s.repo = repo.NewInMemoryRepo()
+	//s.repo = repo.NewInMemoryRepo()
+	s.repo = repo.NewSqliteRepo()
 
 	router := gin.Default()
 

@@ -1,11 +1,13 @@
 package domain
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"errors"
 	"time"
 
 	"github.com/nrednav/cuid2"
+	"gorm.io/gorm"
 )
 
 const (
@@ -22,12 +24,27 @@ var (
 
 type Bitmap [][]bool
 
+func (b Bitmap) Value() (driver.Value, error) {
+	return json.Marshal(b)
+}
+
+func (b *Bitmap) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return errors.New("failed to convert database value to []byte")
+	}
+	return json.Unmarshal(bytes, b)
+}
+
 type Quiz struct {
-	ID        string     `json:"id"`
-	Title     string     `json:"title"`
-	Initial   Bitmap     `json:"initial"`
-	Questions []Question `json:"questions"`
-	Expires   time.Time  `json:"expires"`
+	ID        string         `json:"id" gorm:"primaryKey"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	Title     string         `json:"title"`
+	Initial   Bitmap         `json:"initial"`
+	Questions []Question     `json:"questions"`
+	Expires   time.Time      `json:"expires"`
 }
 
 func NewQuiz(title string, secret string, questions []Question) (Quiz, error) {
@@ -49,15 +66,30 @@ func NewQuiz(title string, secret string, questions []Question) (Quiz, error) {
 }
 
 type Question struct {
+	ID     string `json:"-" gorm:"primaryKey"`
+	QuizID string `json:"-"`
+
 	Question string   `json:"question"`
 	Hint     string   `json:"hint"`
 	Answers  []Answer `json:"answers"`
 }
 
+func (q *Question) BeforeCreate(tx *gorm.DB) (err error) {
+	q.ID = cuid2.Generate()
+	return
+}
+
 type Answer struct {
-	Text    string `json:"text"`
-	Pixel   Pixel  `json:"pixel"`
-	Correct bool   `json:"correct"`
+	ID         string `json:"-" gorm:"primaryKey"`
+	QuestionID string `json:"-"`
+	Text       string `json:"text"`
+	Pixel      Pixel  `json:"pixel"`
+	Correct    bool   `json:"correct"`
+}
+
+func (a *Answer) BeforeCreate(tx *gorm.DB) (err error) {
+	a.ID = cuid2.Generate()
+	return
 }
 
 // omit the correct field on marshaling, but not on unmarshaling
@@ -73,6 +105,13 @@ func (a Answer) MarshalJSON() ([]byte, error) {
 }
 
 type Pixel struct {
-	X int `json:"x"`
-	Y int `json:"y"`
+	ID       string `gorm:"primaryKey"`
+	AnswerID string `json:"-"`
+	X        int    `json:"x"`
+	Y        int    `json:"y"`
+}
+
+func (p *Pixel) BeforeCreate(tx *gorm.DB) (err error) {
+	p.ID = cuid2.Generate()
+	return
 }
