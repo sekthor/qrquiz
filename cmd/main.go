@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/sekthor/puzzleinvite/internal/server"
+	"github.com/sekthor/qrquiz/internal/server"
 )
 
 func main() {

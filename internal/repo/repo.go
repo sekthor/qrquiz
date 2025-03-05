@@ -1,6 +1,6 @@
 package repo
 
-import "github.com/sekthor/puzzleinvite/internal/domain"
+import "github.com/sekthor/qrquiz/internal/domain"
 
 type Repo interface {
 	GetQuiz(id string) (domain.Quiz, error)

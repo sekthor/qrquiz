@@ -1,10 +1,11 @@
-module github.com/sekthor/puzzleinvite
+module github.com/sekthor/qrquiz
 
 go 1.22.1
 
 require (
 	github.com/gin-contrib/multitemplate v1.1.0
 	github.com/gin-gonic/gin v1.10.0
+	github.com/nrednav/cuid2 v1.0.1
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	gorm.io/gorm v1.25.12
 )
@@ -27,7 +28,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/nrednav/cuid2 v1.0.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect

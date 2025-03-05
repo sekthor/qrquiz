@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sekthor/puzzleinvite/internal/repo"
-	"github.com/sekthor/puzzleinvite/internal/server/assets"
+	"github.com/sekthor/qrquiz/internal/repo"
+	"github.com/sekthor/qrquiz/internal/server/assets"
 )
 
 type Server struct {

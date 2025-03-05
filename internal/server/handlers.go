@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sekthor/puzzleinvite/internal/domain"
+	"github.com/sekthor/qrquiz/internal/domain"
 )
 
 func (s *Server) HomeHandler(c *gin.Context) {
