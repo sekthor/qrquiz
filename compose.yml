@@ -1,5 +1,8 @@
 services:
   qrquiz:
+    image: sekthor/qrquiz:latest
     build: .
     ports:
       - 8080:8080
+    volumes:
+      - ./qrquiz-data:/app/data
