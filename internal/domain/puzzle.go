@@ -62,7 +62,7 @@ func NewPuzzle(secret string, questions []Question) (Puzzle, error) {
 func assignPixels(questions []Question, QR Bitmap) (Puzzle, error) {
 	var puzzle Puzzle
 
-	black, white := groupPixelsByColor(QR)
+	black, white := groupPixelsByColor(QR, false)
 
 	// make sure the pixels are in random order
 	black = shuffle(black)
@@ -116,10 +116,16 @@ func shuffle(pixels []Pixel) []Pixel {
 }
 
 // splits a bitmap into two slices of Pixels. One for black and one for white pixels.
-func groupPixelsByColor(bitmap [][]bool) (black []Pixel, white []Pixel) {
+func groupPixelsByColor(bitmap [][]bool, quietzone bool) (black []Pixel, white []Pixel) {
+	offset := 0
+
+	if !quietzone {
+		bitmap, offset = removeQuietZone(bitmap)
+	}
+
 	for y, row := range bitmap {
 		for x, isBlack := range row {
-			pixel := Pixel{X: x, Y: y}
+			pixel := Pixel{X: x + offset, Y: y + offset}
 			if isBlack {
 				black = append(black, pixel)
 			} else {
@@ -128,4 +134,24 @@ func groupPixelsByColor(bitmap [][]bool) (black []Pixel, white []Pixel) {
 		}
 	}
 	return
+}
+
+func detectQuietZoneSize(bitmap Bitmap) int {
+	for i, row := range bitmap {
+		for _, pixel := range row {
+			if pixel {
+				return i
+			}
+		}
+	}
+	return len(bitmap) / 2
+}
+
+func removeQuietZone(bitmap Bitmap) (Bitmap, int) {
+	size := detectQuietZoneSize(bitmap)
+	var new Bitmap
+	for _, row := range bitmap[size : len(bitmap)-size] {
+		new = append(new, row[size:len(row)-size])
+	}
+	return new, size
 }
