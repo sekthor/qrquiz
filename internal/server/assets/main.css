@@ -43,6 +43,7 @@ button:hover {
 
 #qr {
     background-color: #fff;
+    table-layout: fixed;
 }
 
 #qr, #qr td, #qr th {
@@ -62,6 +63,7 @@ button:hover {
 
 .flex {
     display: flex;
+    flex-wrap: wrap;
     gap: 2rem;
 }
 .question {

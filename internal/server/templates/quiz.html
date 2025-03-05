@@ -1,16 +1,17 @@
 {{ define "main.html" }}
 
 <div class="flex">
-    <table id="qr">
-    {{ range $y, $row := .Quiz.Initial }}
-        <tr>
-        {{ range $x, $pixel := $row }}
-            <td class="pixel{{ if $pixel }} dark{{ end }}" id="{{ $x }}-{{ $y }}"></td>
+    <div class="qrwrapper">
+        <table id="qr">
+        {{ range $y, $row := .Quiz.Initial }}
+            <tr>
+            {{ range $x, $pixel := $row }}
+                <td class="pixel{{ if $pixel }} dark{{ end }}" id="{{ $x }}-{{ $y }}"></td>
+            {{ end }}
+            </tr>
         {{ end }}
-        </tr>
-    {{ end }}
-    </table>
-
+        </table>
+    </div>
     <div class="questions">
     <h1>{{ .Quiz.Title }}</h1>
 
