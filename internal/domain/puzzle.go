@@ -13,12 +13,14 @@ var (
 
 // A Puzzle corrupts a given QR code.
 // All correct answers are needed to recreate it with the missing pixels.
+// Fault-Tolerance of QRs is kind of messing with this concept.
+// On "Low" RecoveryLevel we can still expect 7% recovery
 type Puzzle struct {
 	Questions []Question
 	Initial   Bitmap
 }
 
-// Recreated the corrupted QR code
+// Recreate the corrupted QR code
 func (p Puzzle) QR() Bitmap {
 	for _, q := range p.Questions {
 		for _, a := range q.Answers {
@@ -60,7 +62,7 @@ func NewPuzzle(secret string, questions []Question) (Puzzle, error) {
 func assignPixels(questions []Question, QR Bitmap) (Puzzle, error) {
 	var puzzle Puzzle
 
-	black, white := sortedCoordinates(QR)
+	black, white := groupPixelsByColor(QR)
 
 	// make sure the pixels are in random order
 	black = shuffle(black)
@@ -114,7 +116,7 @@ func shuffle(pixels []Pixel) []Pixel {
 }
 
 // splits a bitmap into two slices of Pixels. One for black and one for white pixels.
-func sortedCoordinates(bitmap [][]bool) (black []Pixel, white []Pixel) {
+func groupPixelsByColor(bitmap [][]bool) (black []Pixel, white []Pixel) {
 	for y, row := range bitmap {
 		for x, isBlack := range row {
 			pixel := Pixel{X: x, Y: y}
