@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -56,7 +57,19 @@ type Question struct {
 type Answer struct {
 	Text    string `json:"text"`
 	Pixel   Pixel  `json:"pixel"`
-	Correct bool   `json:"-"`
+	Correct bool   `json:"correct"`
+}
+
+// omit the correct field on marshaling, but not on unmarshaling
+func (a Answer) MarshalJSON() ([]byte, error) {
+	helper := struct {
+		Text  string `json:"text"`
+		Pixel Pixel  `json:"pixel"`
+	}{
+		Text:  a.Text,
+		Pixel: a.Pixel,
+	}
+	return json.Marshal(helper)
 }
 
 type Pixel struct {
