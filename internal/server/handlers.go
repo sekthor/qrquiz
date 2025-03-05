@@ -66,6 +66,12 @@ func (s *Server) NewQuizFormHandler(c *gin.Context) {
 
 func (s *Server) NewQuestionFormHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "question.html", gin.H{
-		"Title": "Quiz",
+		"Title": "Add Questions",
+	})
+}
+
+func (s *Server) NewQuizReviewFormHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "review.html", gin.H{
+		"Title": "Rewiew",
 	})
 }

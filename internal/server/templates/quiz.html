@@ -1,16 +1,34 @@
 {{ define "main.html" }}
 
-<h1>{{ .Quiz.Title }}</h1>
-
-<table id="qr">
-{{ range $y, $row := .Quiz.Initial }}
-    <tr>
-    {{ range $x, $pixel := $row }}
-        <td class="pixel {{ if $pixel }}dark{{ end }}" id="{{ $x }}-{{ $y }}"></td>
+<div class="flex">
+    <table id="qr">
+    {{ range $y, $row := .Quiz.Initial }}
+        <tr>
+        {{ range $x, $pixel := $row }}
+            <td class="pixel{{ if $pixel }} dark{{ end }}" id="{{ $x }}-{{ $y }}"></td>
+        {{ end }}
+        </tr>
     {{ end }}
-    </tr>
-{{ end }}
-</table>
+    </table>
 
+    <div class="questions">
+    <h1>{{ .Quiz.Title }}</h1>
 
+    {{ range $i, $question := .Quiz.Questions }}
+    <div class="question">
+        <strong>{{ $question.Question }}</strong>
+        {{ range $question.Answers }}
+        {{ $id := printf "%d-%d" .Pixel.X .Pixel.Y }}
+        <div>
+            <input type="checkbox" onchange="toggle({{ $id }})" id="{{ $id }}"/>
+            <label for="{{ $id }}">{{ .Text }}</label>
+        </div>
+        {{ end }}
+    </div>
+    {{ end }}
+
+    </div>
+</div>
+
+<script src="/assets/quiz.js"></script>
 {{ end }}

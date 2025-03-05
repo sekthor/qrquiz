@@ -22,11 +22,11 @@ var (
 type Bitmap [][]bool
 
 type Quiz struct {
-	ID        string
-	Title     string
-	Initial   Bitmap
-	Questions []Question
-	Expires   time.Time
+	ID        string     `json:"id"`
+	Title     string     `json:"title"`
+	Initial   Bitmap     `json:"initial"`
+	Questions []Question `json:"questions"`
+	Expires   time.Time  `json:"expires"`
 }
 
 func NewQuiz(title string, secret string, questions []Question) (Quiz, error) {
@@ -48,18 +48,18 @@ func NewQuiz(title string, secret string, questions []Question) (Quiz, error) {
 }
 
 type Question struct {
-	Question string
-	Hint     string
-	Answers  []Answer
+	Question string   `json:"question"`
+	Hint     string   `json:"hint"`
+	Answers  []Answer `json:"answers"`
 }
 
 type Answer struct {
-	Text    string
-	Pixel   Pixel
-	Correct bool
+	Text    string `json:"text"`
+	Pixel   Pixel  `json:"pixel"`
+	Correct bool   `json:"-"`
 }
 
 type Pixel struct {
-	X int
-	Y int
+	X int `json:"x"`
+	Y int `json:"y"`
 }

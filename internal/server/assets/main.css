@@ -8,19 +8,14 @@
     font-family: Roboto, sans-serif;
 }
 
-#qr, #qr td, #qr th {
-    border-collapse: collapse;
-    border: 1px #f0f0f0 solid;
-    background-color: #fff;
-}
-
-input {
+input[type=text] {
     border: 1px #ddd solid;
     padding: .5rem;
     display: block;
     width: 100%;
     box-sizing: border-box;
 }
+
 select {
     border: 1px #ddd solid;
 }
@@ -43,6 +38,15 @@ button:hover {
     margin: auto;
 }
 
+#qr {
+    background-color: #fff;
+}
+
+#qr, #qr td, #qr th {
+    border-collapse: collapse;
+    border: 1px #f0f0f0 solid;
+}
+
 .pixel {
     width: var(--pixelsize);
     height: var(--pixelsize);
@@ -51,4 +55,12 @@ button:hover {
 .dark {
     background-color: black;
     border-color: black;
+}
+
+.flex {
+    display: flex;
+    gap: 2rem;
+}
+.question {
+    display: grid;
 }

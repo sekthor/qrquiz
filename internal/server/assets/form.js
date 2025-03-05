@@ -25,7 +25,7 @@ function addAnswer() {
         answers = []
     }
 
-    answers.push({"text": answer, "correct": correct})
+    answers.push({"text": answer, "correct": (correct == "true" ? true : false)})
     localStorage.setItem("answers", JSON.stringify(answers))
     displayAnswers();
     clearAnswer();
@@ -84,4 +84,57 @@ function review() {
     window.location.href = "/new/review";
 }
 
+function fillReviewTemplate() {
+    document.getElementById("title").innerText = localStorage.getItem("title")
+    document.getElementById("secret").innerText = localStorage.getItem("secret")
+
+    let questions = JSON.parse(localStorage.getItem("questions"));
+
+    if (questions === null) {
+        questions = []
+    }
+
+    let content = ""
+    questions.forEach(question => {
+
+        let answers = question.answers.map(answer => 
+            `<li>${answer.text} <i>(${answer.correct ? "correct" : "wrong"})</i></li>`
+        ).join("")
+
+        console.log(answers)
+
+        content = `<div>
+        <p><strong>${question.question}</strong></p>
+        <ol>
+            ${answers}
+        </ol>
+        </div>`
+    })
+
+    document.getElementById("answers").innerHTML = content
+}
+
+async function submit() {
+
+    const body = {
+            title: localStorage.getItem("title"),
+            secret: localStorage.getItem("secret"),
+            questions: JSON.parse(localStorage.getItem("questions"))
+        }
+
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json")
+
+    const response = await fetch("/new", {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: headers,
+    })
+
+    if (response.ok) {
+        let quiz = await response.json()
+        console.log(quiz)
+        window.location.href = `/quiz/${quiz.id}`
+    }
+}
 //displayAnswers();
