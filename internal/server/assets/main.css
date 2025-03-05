@@ -8,6 +8,11 @@
     font-family: Roboto, sans-serif;
 }
 
+article {
+    max-width: 500px;
+    margin: auto;
+}
+
 input[type=text] {
     border: 1px #ddd solid;
     padding: .5rem;
@@ -34,8 +39,6 @@ button:hover {
 #quizform {
     display: grid;
     gap: 2rem;
-    max-width: 500px;
-    margin: auto;
 }
 
 #qr {
@@ -63,4 +66,6 @@ button:hover {
 }
 .question {
     display: grid;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
 }

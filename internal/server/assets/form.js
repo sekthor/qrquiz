@@ -134,4 +134,3 @@ async function submit() {
         window.location.href = `/quiz/${quiz.id}`
     }
 }
-//displayAnswers();

@@ -1,9 +1,12 @@
 {{ define "main.html" }}
-<h1>QR Quiz</h1>
-<p>
-    This is a proof of concept for a silly app idea.
-    The idea is to create a quiz (questions with right and wrong answers), that if solved properly results in a solution.
-    The solution is emedded in a QR code, and the users answers modify the QR code.
-    If all answers are correct, the QR code will reveal the solution.
-</p>
+<article>
+    <h1>QR Quiz</h1>
+    <p>
+        This is a proof of concept for a silly app idea.
+        The idea is to create a quiz (questions with right and wrong answers), that if solved properly results in a solution.
+        The solution is emedded in a QR code, and the users answers modify the QR code.
+        If all answers are correct, the QR code will reveal the solution.
+    </p>
+    <button onclick="window.location.href='/new'">Create Quiz</button>
+</article>
 {{ end }}

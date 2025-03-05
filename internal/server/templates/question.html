@@ -6,33 +6,34 @@
 }
 </style>
 
-<h1>Add Question</h1>
-<form id="quizform" >
-    <div>
-        <label for="question">Question</label>
-        <input name="question" id="question" type="text" placeholder="What is the Question?"/>
-    </div>
-
-    <div>
-        <label for="answer">Answer</label>
-        
-        <div class="answerinput">
-            <input name="answer" id="answer" type="text" placeholder="Answer"/>
-            <select id="correct">
-                <option value="true">Correct</option>
-                <option value="false">Wrong</option>
-            </select> 
+<article>
+    <h1>Add Question</h1>
+    <form id="quizform" >
+        <div>
+            <label for="question">Question</label>
+            <input name="question" id="question" type="text" placeholder="What is the Question?"/>
         </div>
-        <button type="button" onclick="addAnswer()">Add Answer</button>
-    </div>
 
-    <h3>Answers</h3>
-    <table id="savedanswers"><table>
+        <div>
+            <label for="answer">Answer</label>
+            
+            <div class="answerinput">
+                <input name="answer" id="answer" type="text" placeholder="Answer"/>
+                <select id="correct">
+                    <option value="true">Correct</option>
+                    <option value="false">Wrong</option>
+                </select> 
+            </div>
+            <button type="button" onclick="addAnswer()">Add Answer</button>
+        </div>
 
-    <button type="button" onclick="addQuestion()">Add question</button>
-    <button type="button" onclick="review()">Done</button>
-</form>
+        <h3>Answers</h3>
+        <table id="savedanswers"><table>
 
-
+        <button type="button" onclick="addQuestion()">Add question</button>
+        <button type="button" onclick="review()">Review ></button>
+    </form>
+</article>
 <script src="/assets/form.js"></script>
+<script>displayAnswers();</script>
 {{ end }}
