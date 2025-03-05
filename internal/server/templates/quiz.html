@@ -2,7 +2,7 @@
 
 <h1>{{ .Quiz.Title }}</h1>
 
-<table>
+<table id="qr">
 {{ range $y, $row := .Quiz.Initial }}
     <tr>
     {{ range $x, $pixel := $row }}

@@ -1,12 +1,17 @@
 {{ define "main.html" }}
 <h1>Create new Quiz</h1>
-<form action="/new" method="post">
-    <label for="title">Title</label>
-    <input name="title" id="title" placeholder="My birthday invitation"/>
+<form id="quizform">
+    
+    <div>
+        <label for="title">Title</label>
+        <input name="title" id="title" type="text" placeholder="My birthday invitation"/>
+    </div>
+    <div>
+        <label for="secret">Secret</label>
+        <input name="secret" id="secret" type="text" placeholder="The solution to the quiz"/>
+    </div>
 
-    <label for="secret">Secret</label>
-    <input name="secret" id="secret" placeholder="The solution to the quiz"/>
-
-    <button type="submit">Create</button>
+    <button type="button" onclick="saveQuiz()">Create</button>
 </form>
+<script src="/assets/form.js"></script>
 {{ end }}

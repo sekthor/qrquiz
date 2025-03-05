@@ -24,6 +24,7 @@ func (s *Server) Run() error {
 	router.GET("/", s.HomeHandler)
 	router.GET("/quiz/:id", s.QuizHandler)
 	router.GET("/new", s.NewQuizFormHandler)
+	router.GET("/new/question", s.NewQuestionFormHandler)
 	router.POST("/new", s.NewQuizHandler)
 
 	return router.Run()
