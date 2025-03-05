@@ -101,8 +101,6 @@ function fillReviewTemplate() {
             `<li>${answer.text} <i>(${answer.correct ? "correct" : "wrong"})</i></li>`
         ).join("")
 
-        console.log(answers)
-
         content = `<div>
         <p><strong>${question.question}</strong></p>
         <ol>
@@ -133,7 +131,6 @@ async function submit() {
 
     if (response.ok) {
         let quiz = await response.json()
-        console.log(quiz)
         window.location.href = `/quiz/${quiz.id}`
     }
 }
