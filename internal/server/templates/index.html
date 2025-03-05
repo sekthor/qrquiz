@@ -2,10 +2,13 @@
 <article>
     <h1>QR Quiz</h1>
     <p>
-        This is a proof of concept for a silly app idea.
-        The idea is to create a quiz (questions with right and wrong answers), that if solved properly results in a solution.
-        The solution is emedded in a QR code, and the users answers modify the QR code.
-        If all answers are correct, the QR code will reveal the solution.
+        This is a silly app.
+        You can use it to create a quiz.
+        You provide a secret solution (such as a link or passphrase) and a number of questions and answers.
+
+        Your solution will be encoded in a QR code.
+        The QR code will then be intentionally broken.
+        By providing correct answers to the quiz's questions, a user can "fix" the broken QR code and ultimately scan it to reveal the secret.
     </p>
     <button onclick="window.location.href='/new'">Create Quiz</button>
 </article>

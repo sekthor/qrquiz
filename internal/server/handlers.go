@@ -27,7 +27,7 @@ func (s *Server) QuizHandler(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "quiz.html", gin.H{
-		"Title": "Quiz",
+		"Title": quiz.Title,
 		"Quiz":  quiz,
 	})
 }
@@ -60,7 +60,7 @@ func (s *Server) NewQuizHandler(c *gin.Context) {
 
 func (s *Server) NewQuizFormHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "form.html", gin.H{
-		"Title": "Quiz",
+		"Title": "Create a Quiz",
 	})
 }
 
@@ -72,6 +72,6 @@ func (s *Server) NewQuestionFormHandler(c *gin.Context) {
 
 func (s *Server) NewQuizReviewFormHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "review.html", gin.H{
-		"Title": "Rewiew",
+		"Title": "Review Quiz",
 	})
 }

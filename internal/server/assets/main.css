@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
-    --pixelsize: 12px
+    --pixelsize: 10px
 }
 
 * {
@@ -65,6 +65,7 @@ button:hover {
     flex-wrap: wrap;
     gap: 2rem;
 }
+
 .question {
     display: grid;
     line-height: 1.5;
