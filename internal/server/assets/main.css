@@ -43,7 +43,6 @@ button:hover {
 
 #qr {
     background-color: #fff;
-    table-layout: fixed;
 }
 
 #qr, #qr td, #qr th {
