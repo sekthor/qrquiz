@@ -101,7 +101,7 @@ function fillReviewTemplate() {
             `<li>${answer.text} <i>(${answer.correct ? "correct" : "wrong"})</i></li>`
         ).join("")
 
-        content = `<div>
+        content += `<div>
         <p><strong>${question.question}</strong></p>
         <ol>
             ${answers}
