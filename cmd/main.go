@@ -3,13 +3,18 @@ package main
 import (
 	"log"
 
+	"github.com/sekthor/qrquiz/internal/config"
 	"github.com/sekthor/qrquiz/internal/server"
 )
 
 func main() {
-	server := server.Server{}
+	config, err := config.ReadConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	if err := server.Run(); err != nil {
+	server := server.Server{}
+	if err := server.Run(config); err != nil {
 		log.Fatal(err)
 	}
 }

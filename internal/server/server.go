@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sekthor/qrquiz/internal/config"
 	"github.com/sekthor/qrquiz/internal/repo"
 	"github.com/sekthor/qrquiz/internal/server/assets"
 )
@@ -12,10 +13,14 @@ type Server struct {
 	repo repo.Repo
 }
 
-func (s *Server) Run() error {
+func (s *Server) Run(config *config.Config) error {
 
-	//s.repo = repo.NewInMemoryRepo()
-	s.repo = repo.NewSqliteRepo()
+	switch config.Database {
+	case "sqlite":
+		s.repo = repo.NewSqliteRepo()
+	default:
+		s.repo = repo.NewInMemoryRepo()
+	}
 
 	router := gin.Default()
 
@@ -29,5 +34,5 @@ func (s *Server) Run() error {
 	router.GET("/new/review", s.NewQuizReviewFormHandler)
 	router.POST("/new", s.NewQuizHandler)
 
-	return router.Run()
+	return router.Run(config.Listen)
 }
