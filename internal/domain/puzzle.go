@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	"math"
 	"math/rand"
 
 	"github.com/skip2/go-qrcode"
@@ -20,16 +21,9 @@ type Puzzle struct {
 	Initial   Bitmap
 }
 
-// Recreate the corrupted QR code
-func (p Puzzle) QR() Bitmap {
-	for _, q := range p.Questions {
-		for _, a := range q.Answers {
-			if a.Correct {
-				p.Initial[a.Pixel.Y][a.Pixel.X] = true
-			}
-		}
-	}
-	return p.Initial
+type EligiblePixels struct {
+	Set   []Pixel
+	Unset []Pixel
 }
 
 // Creates a Puzzle by encoding a secret in a QR Code, and then subtracting
@@ -43,13 +37,40 @@ func NewPuzzle(secret string, questions []Question) (Puzzle, error) {
 		return puzzle, errEncodeQr
 	}
 
-	QR := qr.Bitmap()
-	puzzle, err = assignPixels(questions, QR)
+	// get a bitmap without the quiet zone
+	qr.DisableBorder = true
+	bitmap := qr.Bitmap()
+
+	puzzle, err = assignPixels(questions, bitmap)
 	if err != nil {
 		return puzzle, err
 	}
 
 	return puzzle, nil
+}
+
+func getEligiblePixels(bitmap Bitmap) EligiblePixels {
+	var pixels EligiblePixels
+
+	cornerSize := PositionSize + ModuleSize
+
+	for y, row := range bitmap {
+		for x, isPixelSet := range row {
+			// ingore pixels on position corners
+			if (y < cornerSize && x < cornerSize) || // top left
+				(y < cornerSize && x > len(row)-cornerSize) || // top right
+				(y > len(bitmap)-cornerSize && x < cornerSize) { // bottom left
+				continue
+			}
+
+			if isPixelSet {
+				pixels.Set = append(pixels.Set, Pixel{X: x, Y: y})
+			} else {
+				pixels.Unset = append(pixels.Unset, Pixel{X: x, Y: y})
+			}
+		}
+	}
+	return pixels
 }
 
 // Correct answers are assigned a black pixel from the qr code.
@@ -59,43 +80,60 @@ func NewPuzzle(secret string, questions []Question) (Puzzle, error) {
 // to recreate the original QR.
 // Wrong answers will result add black pixels, where none should be.
 // DISCLAIMER: too many answers may result in "running out of pixels"
-func assignPixels(questions []Question, QR Bitmap) (Puzzle, error) {
+func assignPixels(questions []Question, bitmap Bitmap) (Puzzle, error) {
 	var puzzle Puzzle
 
-	black, white := groupPixelsByColor(QR, false)
+	// get set/unset pixels, but ignore the position markers in the corner
+	pixels := getEligiblePixels(bitmap)
+	pixels.Shuffle()
 
-	// make sure the pixels are in random order
-	black = shuffle(black)
-	white = shuffle(white)
-
+	// we need to count before assigning to figure out
+	// how many pixels to assign per answer
 	var correctCount, wrongCount = 0, 0
+	for _, question := range questions {
+		for _, answer := range question.Answers {
+			if answer.Correct {
+				correctCount += 1
+			} else {
+				wrongCount += 1
+			}
+		}
+	}
+
+	// will be filled with all pixels assigned to correct answers.
+	// these will be removed from the original QR bitmap
 	var subtractMask []Pixel
 
-	for i := 0; i < len(questions); i++ {
-		for j := 0; j < len(questions[i].Answers); j++ {
-			if questions[i].Answers[j].Correct {
-				pixel := black[correctCount]
-				subtractMask = append(subtractMask, pixel)
-				questions[i].Answers[j].Pixel = pixel
-				correctCount++
-			} else {
-				questions[i].Answers[j].Pixel = white[wrongCount]
-				wrongCount++
-			}
+	// determine the amount of pixels per answer. Since we choose set pixels for
+	// correct answers and unset for wrong ones, we distribute the pixels to the
+	// respective answer amount. The amount per answer is the smaller of the results
+	// as this will work for both.
+	pixelsPerAnswer := int(math.Min(
+		float64(len(pixels.Set)/correctCount),
+		float64(len(pixels.Unset)/wrongCount),
+	))
 
-			if correctCount > len(black) || wrongCount > len(white) {
-				return puzzle, ErrorNotEnoughPixels
+	var setCursor, unsetCursor = 0, 0
+	for i, question := range questions {
+		for j, answer := range question.Answers {
+			if answer.Correct {
+				questions[i].Answers[j].Pixels = pixels.Set[setCursor : setCursor+pixelsPerAnswer]
+				subtractMask = append(subtractMask, pixels.Set[setCursor:setCursor+pixelsPerAnswer]...)
+				setCursor += pixelsPerAnswer
+			} else {
+				questions[i].Answers[j].Pixels = pixels.Unset[unsetCursor : unsetCursor+pixelsPerAnswer]
+				unsetCursor += pixelsPerAnswer
 			}
 		}
 	}
 
 	puzzle.Questions = questions
-	puzzle.Initial = subtract(QR, subtractMask)
+	puzzle.Initial = subtract(bitmap, subtractMask)
 
 	return puzzle, nil
 }
 
-// deletes black pixels from a bitmap from a given list of pixels
+// deletes set pixels from a bitmap from a given list of pixels
 func subtract(qr Bitmap, mask []Pixel) Bitmap {
 	for _, pixel := range mask {
 		qr[pixel.Y][pixel.X] = false
@@ -115,43 +153,21 @@ func shuffle(pixels []Pixel) []Pixel {
 	return shuffled
 }
 
-// splits a bitmap into two slices of Pixels. One for black and one for white pixels.
-func groupPixelsByColor(bitmap [][]bool, quietzone bool) (black []Pixel, white []Pixel) {
-	offset := 0
-
-	if !quietzone {
-		bitmap, offset = removeQuietZone(bitmap)
-	}
-
-	for y, row := range bitmap {
-		for x, isBlack := range row {
-			pixel := Pixel{X: x + offset, Y: y + offset}
-			if isBlack {
-				black = append(black, pixel)
-			} else {
-				white = append(white, pixel)
+// Recreate the corrupted QR code
+func (p Puzzle) QR() Bitmap {
+	for _, q := range p.Questions {
+		for _, a := range q.Answers {
+			if a.Correct {
+				for _, pixel := range a.Pixels {
+					p.Initial[pixel.Y][pixel.X] = true
+				}
 			}
 		}
 	}
-	return
+	return p.Initial
 }
 
-func detectQuietZoneSize(bitmap Bitmap) int {
-	for i, row := range bitmap {
-		for _, pixel := range row {
-			if pixel {
-				return i
-			}
-		}
-	}
-	return len(bitmap) / 2
-}
-
-func removeQuietZone(bitmap Bitmap) (Bitmap, int) {
-	size := detectQuietZoneSize(bitmap)
-	var new Bitmap
-	for _, row := range bitmap[size : len(bitmap)-size] {
-		new = append(new, row[size:len(row)-size])
-	}
-	return new, size
+func (e *EligiblePixels) Shuffle() {
+	e.Set = shuffle(e.Set)
+	e.Unset = shuffle(e.Unset)
 }

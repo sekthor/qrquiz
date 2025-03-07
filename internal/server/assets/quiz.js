@@ -7,3 +7,10 @@ function toggle(pixelid) {
         pixel.classList.add("dark")
     }
 }
+
+function batchToggle(coordinates) {
+
+    coordinates.forEach(pixel => {
+        toggle(`${pixel[0]}-${pixel[1]}`)
+    });
+}

@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	CorrectAnswer = true
-	WrongAnswer   = false
-
-	// three months
-	DefaultExpiration = time.Hour * 24 * 30 * 3
+	ModuleSize        = 1
+	PositionSize      = 7 * ModuleSize
+	CorrectAnswer     = true
+	WrongAnswer       = false
+	DefaultExpiration = time.Hour * 24 * 30 * 3 // three months
 )
 
 var (
@@ -80,11 +80,11 @@ func (q *Question) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 type Answer struct {
-	ID         string `json:"-" gorm:"primaryKey"`
-	QuestionID string `json:"-"`
-	Text       string `json:"text"`
-	Pixel      Pixel  `json:"pixel"`
-	Correct    bool   `json:"correct"`
+	ID         string  `json:"-" gorm:"primaryKey"`
+	QuestionID string  `json:"-"`
+	Text       string  `json:"text"`
+	Pixels     []Pixel `json:"pixels"`
+	Correct    bool    `json:"correct"`
 }
 
 func (a *Answer) BeforeCreate(tx *gorm.DB) (err error) {
@@ -95,17 +95,17 @@ func (a *Answer) BeforeCreate(tx *gorm.DB) (err error) {
 // omit the correct field on marshaling, but not on unmarshaling
 func (a Answer) MarshalJSON() ([]byte, error) {
 	helper := struct {
-		Text  string `json:"text"`
-		Pixel Pixel  `json:"pixel"`
+		Text   string  `json:"text"`
+		Pixels []Pixel `json:"pixels"`
 	}{
-		Text:  a.Text,
-		Pixel: a.Pixel,
+		Text:   a.Text,
+		Pixels: a.Pixels,
 	}
 	return json.Marshal(helper)
 }
 
 type Pixel struct {
-	ID       string `gorm:"primaryKey"`
+	ID       string `json:"-" gorm:"primaryKey"`
 	AnswerID string `json:"-"`
 	X        int    `json:"x"`
 	Y        int    `json:"y"`
