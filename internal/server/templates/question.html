@@ -24,12 +24,16 @@
                     <option value="false">Wrong</option>
                 </select> 
             </div>
-            <button type="button" onclick="addAnswer()">Add Answer</button>
+            <div style="text-align: right; margin-top: .5rem;">
+                <button type="button" onclick="addAnswer()">Add Answer</button>
+            </div>
         </div>
 
-        <h3>Answers</h3>
-        <table id="savedanswers"><table>
-
+        <div>
+            <h3>Answers</h3>
+            <table id="savedanswers"></table>
+        </div>
+        
         <button type="button" onclick="addQuestion()">Add question</button>
         <button type="button" onclick="review()">Review ></button>
     </form>

@@ -105,6 +105,10 @@ button:hover {
     gap: 2rem;
 }
 
+#savedanswers {
+    width: 100%;
+}
+
 @media only screen and (max-width: 600px) {
     .solution{
         top: auto;
