@@ -50,3 +50,9 @@ func (s sqliteRepo) GetQuiz(id string) (domain.Quiz, error) {
 func (s sqliteRepo) Save(quiz domain.Quiz) error {
 	return s.db.Save(&quiz).Error
 }
+
+func (s sqliteRepo) List() ([]domain.Quiz, error) {
+	var list []domain.Quiz
+	result := s.db.Find(&list)
+	return list, result.Error
+}

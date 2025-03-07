@@ -75,3 +75,13 @@ func (s *Server) NewQuizReviewFormHandler(c *gin.Context) {
 		"Title": "Review Quiz",
 	})
 }
+
+func (s *Server) QuizlistHandler(c *gin.Context) {
+
+	quiz, _ := s.repo.List()
+
+	c.HTML(http.StatusOK, "list.html", gin.H{
+		"Title":    "Quiz List",
+		"Quizlist": quiz,
+	})
+}

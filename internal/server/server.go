@@ -39,6 +39,7 @@ func (s *Server) Run(config *config.Config) error {
 	router.GET("/new/question", s.NewQuestionFormHandler)
 	router.GET("/new/review", s.NewQuizReviewFormHandler)
 	router.POST("/new", s.NewQuizHandler)
+	router.GET("/list", s.QuizlistHandler)
 
 	return router.Run(config.Listen)
 }

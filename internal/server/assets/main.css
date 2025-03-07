@@ -94,6 +94,17 @@ button:hover {
     display: block;
 }
 
+.quizlist {
+    border-collapse: collapse;
+    border-spacing: 0px;
+    margin: 0;
+}
+
+.quizlist td {
+    border: 1px #f0f0f0 solid;
+    padding: .5rem 1rem;
+}
+
 #qr {
     background-color: #fff;
 }

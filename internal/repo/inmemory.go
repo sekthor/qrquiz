@@ -27,3 +27,7 @@ func (i *inMemoryRepo) Save(quiz domain.Quiz) error {
 	i.quizes = append(i.quizes, quiz)
 	return nil
 }
+
+func (i *inMemoryRepo) List() ([]domain.Quiz, error) {
+	return i.quizes, nil
+}

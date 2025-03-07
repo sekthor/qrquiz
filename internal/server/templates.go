@@ -16,6 +16,7 @@ func renderer() multitemplate.Renderer {
 	renderer.AddFromFS("form.html", templates, "templates/base.html", "templates/form.html")
 	renderer.AddFromFS("question.html", templates, "templates/base.html", "templates/question.html")
 	renderer.AddFromFS("review.html", templates, "templates/base.html", "templates/review.html")
+	renderer.AddFromFS("list.html", templates, "templates/base.html", "templates/list.html")
 	renderer.AddFromFS("404.html", templates, "templates/base.html", "templates/404.html")
 	return renderer
 }
