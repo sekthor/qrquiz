@@ -17,6 +17,8 @@ func ReadConfig() (*Config, error) {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
+	viper.SetDefault("Listen", ":8080")
+
 	viper.BindEnv("Database")
 	viper.BindEnv("Listen")
 	viper.BindEnv("Loglevel")
