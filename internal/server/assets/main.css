@@ -71,3 +71,6 @@ button:hover {
     line-height: 1.5;
     margin-bottom: 1.5rem;
 }
+.qrwrapper {
+    padding: calc(4 * var(--pixelsize));
+}
