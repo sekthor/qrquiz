@@ -1,15 +1,10 @@
 package domain
 
 import (
-	"errors"
 	"math"
 	"math/rand"
 
 	"github.com/skip2/go-qrcode"
-)
-
-var (
-	ErrorNotEnoughPixels = errors.New("not enough pixels for the amount of answers in quiz")
 )
 
 // A Puzzle corrupts a given QR code.
@@ -73,13 +68,13 @@ func getEligiblePixels(bitmap Bitmap) EligiblePixels {
 	return pixels
 }
 
-// Correct answers are assigned a black pixel from the qr code.
-// Wrong answers are assigned a white pixel.
-// From the QR code, we "subtract" all black pixels, that were chosen for correct answers.
-// This creates our initial Puzzle QR, which need the pixels of correct answers to be added
-// to recreate the original QR.
-// Wrong answers will result add black pixels, where none should be.
-// DISCLAIMER: too many answers may result in "running out of pixels"
+// Correct answers are assigned a set pixel from the qr code.
+// Wrong answers are assigned an unset pixel.
+// From the QR code, we "subtract" all pixels, that were chosen for correct answers.
+// This creates our initial Puzzle QR.
+// If we add all pixels from all correct answers, we can recreate the original QR.
+// Wrong answers will result set pixels, that are supposed to be unset, further
+// corrupting the QR.
 func assignPixels(questions []Question, bitmap Bitmap) (Puzzle, error) {
 	var puzzle Puzzle
 
