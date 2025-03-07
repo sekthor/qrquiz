@@ -27,6 +27,12 @@ func (s *Server) Run(config *config.Config) error {
 	router.HTMLRender = renderer()
 	router.StaticFS("/assets", http.FS(assets.Assets))
 
+	router.NoRoute(func(c *gin.Context) {
+		c.HTML(http.StatusNotFound, "404.html", gin.H{
+			"Title": "Not Found",
+		})
+	})
+
 	router.GET("/", s.HomeHandler)
 	router.GET("/quiz/:id", s.QuizHandler)
 	router.GET("/new", s.NewQuizFormHandler)
