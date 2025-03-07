@@ -53,8 +53,8 @@ func getEligiblePixels(bitmap Bitmap) EligiblePixels {
 		for x, isPixelSet := range row {
 			// ingore pixels on position corners
 			if (y < cornerSize && x < cornerSize) || // top left
-				(y < cornerSize && x > len(row)-cornerSize) || // top right
-				(y > len(bitmap)-cornerSize && x < cornerSize) { // bottom left
+				(y < cornerSize && x > len(row)-cornerSize-1) || // top right
+				(y > len(bitmap)-cornerSize-1 && x < cornerSize) { // bottom left
 				continue
 			}
 
