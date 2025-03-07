@@ -47,7 +47,7 @@ function displayAnswers() {
     
     let content = [];
     answers.forEach(answer => {
-        content += `<tr>
+        content += `<tr class=${answer.correct ? "correct" : "wrong"}>
             <td style="width:99%; padding-right: 1rem;">${answer.text}</td>
             <td style="padding-right: 1rem;"><i>${answer.correct ? "correct" : "wrong"}</i></td>
             <td><button type='button' onclick='removeAnswer("${answer.text}")'>Remove</button></td>

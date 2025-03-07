@@ -105,6 +105,17 @@ button:hover {
     padding: .5rem 1rem;
 }
 
+.wrong {
+    color: red;
+}
+
+.correct {
+    color: green;
+}
+
+table {
+    border-collapse: collapse;
+}
 #qr {
     background-color: #fff;
 }
