@@ -39,7 +39,10 @@ button {
 }
 
 button:hover {
-    background-color: #444;
+    background-color: #555;
+    border-radius: .25rem;
+     -webkit-transition: border-radius .25s;
+    transition: border-radius .25s;
 }
 
 .pixel {
