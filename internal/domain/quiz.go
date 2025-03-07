@@ -11,11 +11,9 @@ import (
 )
 
 const (
-	CorrectAnswer = true
-	WrongAnswer   = false
-
-	// three months
-	DefaultExpiration = time.Hour * 24 * 30 * 3
+	ModuleSize        = 1
+	PositionSize      = 7 * ModuleSize
+	DefaultExpiration = time.Hour * 24 * 30 * 3 // three months
 )
 
 var (
@@ -23,18 +21,6 @@ var (
 )
 
 type Bitmap [][]bool
-
-func (b Bitmap) Value() (driver.Value, error) {
-	return json.Marshal(b)
-}
-
-func (b *Bitmap) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return errors.New("failed to convert database value to []byte")
-	}
-	return json.Unmarshal(bytes, b)
-}
 
 type Quiz struct {
 	ID        string         `json:"id" gorm:"primaryKey"`
@@ -74,17 +60,24 @@ type Question struct {
 	Answers  []Answer `json:"answers"`
 }
 
+type Answer struct {
+	ID         string  `json:"-" gorm:"primaryKey"`
+	QuestionID string  `json:"-"`
+	Text       string  `json:"text"`
+	Pixels     []Pixel `json:"pixels"`
+	Correct    bool    `json:"correct"`
+}
+
+type Pixel struct {
+	ID       string `json:"-" gorm:"primaryKey"`
+	AnswerID string `json:"-"`
+	X        int    `json:"x"`
+	Y        int    `json:"y"`
+}
+
 func (q *Question) BeforeCreate(tx *gorm.DB) (err error) {
 	q.ID = cuid2.Generate()
 	return
-}
-
-type Answer struct {
-	ID         string `json:"-" gorm:"primaryKey"`
-	QuestionID string `json:"-"`
-	Text       string `json:"text"`
-	Pixel      Pixel  `json:"pixel"`
-	Correct    bool   `json:"correct"`
 }
 
 func (a *Answer) BeforeCreate(tx *gorm.DB) (err error) {
@@ -92,26 +85,33 @@ func (a *Answer) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
+func (p *Pixel) BeforeCreate(tx *gorm.DB) (err error) {
+	p.ID = cuid2.Generate()
+	return
+}
+
 // omit the correct field on marshaling, but not on unmarshaling
 func (a Answer) MarshalJSON() ([]byte, error) {
 	helper := struct {
-		Text  string `json:"text"`
-		Pixel Pixel  `json:"pixel"`
+		Text   string  `json:"text"`
+		Pixels []Pixel `json:"pixels"`
 	}{
-		Text:  a.Text,
-		Pixel: a.Pixel,
+		Text:   a.Text,
+		Pixels: a.Pixels,
 	}
 	return json.Marshal(helper)
 }
 
-type Pixel struct {
-	ID       string `gorm:"primaryKey"`
-	AnswerID string `json:"-"`
-	X        int    `json:"x"`
-	Y        int    `json:"y"`
+// TODO: implement the valuer & scanner interface in a less
+// "verbose" and more performant way than JSON
+func (b Bitmap) Value() (driver.Value, error) {
+	return json.Marshal(b)
 }
 
-func (p *Pixel) BeforeCreate(tx *gorm.DB) (err error) {
-	p.ID = cuid2.Generate()
-	return
+func (b *Bitmap) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return errors.New("failed to convert database value to []byte")
+	}
+	return json.Unmarshal(bytes, b)
 }

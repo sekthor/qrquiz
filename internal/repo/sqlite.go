@@ -42,11 +42,11 @@ func NewSqliteRepo() sqliteRepo {
 func (s sqliteRepo) GetQuiz(id string) (domain.Quiz, error) {
 	var quiz domain.Quiz
 	result := s.db.Preload(clause.Associations).
-		Preload("Questions.Answers.Pixel").
+		Preload("Questions.Answers.Pixels").
 		First(&quiz, "id = ?", id)
 	return quiz, result.Error
 }
 
 func (s sqliteRepo) Save(quiz domain.Quiz) error {
-	return s.db.Create(&quiz).Error
+	return s.db.Save(&quiz).Error
 }

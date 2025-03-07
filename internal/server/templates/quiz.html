@@ -19,11 +19,12 @@
     <div class="question">
         <strong>{{ $question.Question }}</strong>
         {{ range $question.Answers }}
-        {{ $id := printf "%d-%d" .Pixel.X .Pixel.Y }}
-        <div>
-            <input type="checkbox" onchange="toggle({{ $id }})" id="{{ $id }}"/>
-            <label for="{{ $id }}">{{ .Text }}</label>
-        </div>
+            <div>
+                <input type="checkbox" 
+                    onchange="batchToggle([{{ range $j, $pixel := .Pixels }}{{ if $j }},{{ end }}[{{ $pixel.X }},{{ $pixel.Y }}]{{ end }}])" 
+                    id="{{ .ID }}"/>
+                <label for="{{ .ID }}">{{ .Text }}</label>
+            </div>
         {{ end }}
     </div>
     {{ end }}
