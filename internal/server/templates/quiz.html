@@ -1,36 +1,40 @@
 {{ define "main.html" }}
 
-<div class="flex">
-    <div class="qrwrapper">
-        <table id="qr">
-        {{ range $y, $row := .Quiz.Initial }}
-            <tr>
-            {{ range $x, $pixel := $row }}
-                <td class="pixel{{ if $pixel }} dark{{ end }}" id="{{ $x }}-{{ $y }}"></td>
-            {{ end }}
-            </tr>
-        {{ end }}
-        </table>
-    </div>
-    <div class="questions">
-    <h1>{{ .Quiz.Title }}</h1>
+<article>
+    <div class="flex">
+        <div class="quiz">
+            <h1>{{ .Quiz.Title }}</h1>
 
-    {{ range $i, $question := .Quiz.Questions }}
-    <div class="question">
-        <strong>{{ $question.Question }}</strong>
-        {{ range $question.Answers }}
-            <div>
-                <input type="checkbox" 
-                    onchange="batchToggle([{{ range $j, $pixel := .Pixels }}{{ if $j }},{{ end }}[{{ $pixel.X }},{{ $pixel.Y }}]{{ end }}])" 
-                    id="{{ .ID }}"/>
-                <label for="{{ .ID }}">{{ .Text }}</label>
+            {{ range $i, $question := .Quiz.Questions }}
+            <div class="question">
+                <strong>{{ $question.Question }}</strong>
+                {{ range $question.Answers }}
+                    <div>
+                        <input type="checkbox" 
+                            onchange="batchToggle([{{ range $j, $pixel := .Pixels }}{{ if $j }},{{ end }}[{{ $pixel.X }},{{ $pixel.Y }}]{{ end }}])" 
+                            id="{{ .ID }}"/>
+                        <label for="{{ .ID }}">{{ .Text }}</label>
+                    </div>
+                {{ end }}
             </div>
-        {{ end }}
-    </div>
-    {{ end }}
+            {{ end }}
+        </div>
 
+        <div class="solution">
+            <div class="qrwrapper">
+                <table id="qr">
+                {{ range $y, $row := .Quiz.Initial }}
+                    <tr>
+                    {{ range $x, $pixel := $row }}
+                        <td class="pixel{{ if $pixel }} dark{{ end }}" id="{{ $x }}-{{ $y }}"></td>
+                    {{ end }}
+                    </tr>
+                {{ end }}
+                </table>
+            </div>
+            <span>Solve me!</span>
+        </div>
     </div>
-</div>
-
+</article>
 <script src="/assets/quiz.js"></script>
 {{ end }}

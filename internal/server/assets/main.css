@@ -1,16 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap');
 
 :root {
-    --pixelsize: 10px
+    --pixelsize: 5px
 }
 
 * {
     font-family: Roboto, sans-serif;
 }
 
-article {
+.form {
     max-width: 500px;
+}
+
+article {
+    max-width: 800px;
     margin: auto;
+    margin-top: 2rem;
 }
 
 input[type=text] {
@@ -36,20 +42,6 @@ button:hover {
     background-color: #444;
 }
 
-#quizform {
-    display: grid;
-    gap: 2rem;
-}
-
-#qr {
-    background-color: #fff;
-}
-
-#qr, #qr td, #qr th {
-    border-collapse: collapse;
-    border: 1px #f0f0f0 solid;
-}
-
 .pixel {
     width: var(--pixelsize);
     height: var(--pixelsize);
@@ -63,7 +55,13 @@ button:hover {
 .flex {
     display: flex;
     flex-wrap: wrap;
-    gap: 2rem;
+    gap: 4rem;
+    margin: auto 2rem;
+}
+
+.quiz {
+    flex: 1;
+    margin: auto;
 }
 
 .question {
@@ -71,6 +69,48 @@ button:hover {
     line-height: 1.5;
     margin-bottom: 1.5rem;
 }
-.qrwrapper {
+
+.solution {
+    top: 4rem;
+    right: 2rem;
+    background-color: white;
+    height: fit-content;
+    position: fixed;
+    border: 1px #ddd solid;
+    border-radius: calc(4 * var(--pixelsize));;
     padding: calc(4 * var(--pixelsize));
+    text-align: center;
+    box-shadow: #ddd 2px 2px 10px;
+}
+
+.solution span {
+    margin-bottom: 0;
+    font-family: "Caveat", cursive;
+    font-size: x-large;
+    margin-top: 2rem;
+    display: block;
+}
+
+#qr {
+    background-color: #fff;
+}
+
+#qr, #qr td, #qr th {
+    border-collapse: collapse;
+    border: 1px #f0f0f0 solid;
+}
+
+#quizform {
+    display: grid;
+    gap: 2rem;
+}
+
+@media only screen and (max-width: 600px) {
+    .solution{
+        top: auto;
+        bottom: 2rem;
+    }
+    .quiz {
+        margin-bottom: 20rem;
+    }
 }
