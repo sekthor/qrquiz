@@ -108,6 +108,10 @@ func assignPixels(questions []Question, bitmap Bitmap) (Puzzle, error) {
 		float64(len(pixels.Unset)/wrongCount),
 	))
 
+	if pixelsPerAnswer < 1 {
+		return puzzle, ErrTooManyAnswers
+	}
+
 	var setCursor, unsetCursor = 0, 0
 	for i, question := range questions {
 		for j, answer := range question.Answers {
