@@ -40,9 +40,6 @@ button {
 
 button:hover {
     background-color: #555;
-    border-radius: .25rem;
-     -webkit-transition: border-radius .25s;
-    transition: border-radius .25s;
 }
 
 .pixel {
@@ -89,8 +86,8 @@ button:hover {
 .solution span {
     margin-bottom: 0;
     font-family: "Caveat", cursive;
-    font-size: x-large;
-    margin-top: 2rem;
+    font-size: 2em;
+    margin-top: 1rem;
     display: block;
 }
 
@@ -116,12 +113,12 @@ button:hover {
 table {
     border-collapse: collapse;
 }
+
 #qr {
     background-color: #fff;
 }
 
 #qr, #qr td, #qr th {
-    border-collapse: collapse;
     border: 1px #f0f0f0 solid;
 }
 
@@ -135,7 +132,10 @@ table {
 }
 
 @media only screen and (max-width: 600px) {
-    .solution{
+    :root {
+        --pixelsize: 3px
+    }
+    .solution {
         top: auto;
         bottom: 2rem;
     }
