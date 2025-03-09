@@ -12,7 +12,6 @@ import (
 func init() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	logrus.SetOutput(os.Stdout)
-	logrus.SetLevel(logrus.InfoLevel)
 }
 
 func main() {
@@ -20,6 +19,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// TODO: configre
+	logrus.SetLevel(logrus.InfoLevel)
 
 	server := server.Server{}
 	if err := server.Run(config); err != nil {
