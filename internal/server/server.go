@@ -23,7 +23,11 @@ func (s *Server) Run(config *config.Config) error {
 		s.repo = repo.NewInMemoryRepo()
 	}
 
-	router := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+
+	router := gin.New()
+	router.Use(gin.Recovery())
+	router.Use(GinLogger())
 
 	router.HTMLRender = renderer()
 	router.StaticFS("/assets", http.FS(assets.Assets))
