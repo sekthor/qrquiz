@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sekthor/qrquiz/internal/domain"
@@ -78,8 +79,22 @@ func (s *Server) NewQuizReviewFormHandler(c *gin.Context) {
 }
 
 func (s *Server) QuizlistHandler(c *gin.Context) {
+	pageStr := c.Param("page")
+	if pageStr == "" {
+		pageStr = "1"
+	}
 
-	quiz, _ := s.repo.List()
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	if page < 1 {
+		page = 1
+	}
+
+	quiz, _ := s.repo.List(page, 100)
 
 	c.HTML(http.StatusOK, "list.html", gin.H{
 		"Title":    "Quiz List",

@@ -28,6 +28,18 @@ func (i *inMemoryRepo) Save(quiz domain.Quiz) error {
 	return nil
 }
 
-func (i *inMemoryRepo) List() ([]domain.Quiz, error) {
-	return i.quizes, nil
+func (i *inMemoryRepo) List(page int, size int) ([]domain.Quiz, error) {
+
+	start := (page - 1) * size
+	end := start + size
+
+	if len(i.quizes) < start {
+		return []domain.Quiz{}, nil
+	}
+
+	if len(i.quizes) < end {
+		return i.quizes[start:], nil
+	}
+
+	return i.quizes[start:end], nil
 }

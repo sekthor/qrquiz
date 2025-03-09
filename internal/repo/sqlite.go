@@ -51,8 +51,8 @@ func (s sqliteRepo) Save(quiz domain.Quiz) error {
 	return s.db.Save(&quiz).Error
 }
 
-func (s sqliteRepo) List() ([]domain.Quiz, error) {
+func (s sqliteRepo) List(page int, size int) ([]domain.Quiz, error) {
 	var list []domain.Quiz
-	result := s.db.Find(&list)
+	result := s.db.Offset((page - 1) * size).Limit(size).Find(&list)
 	return list, result.Error
 }
