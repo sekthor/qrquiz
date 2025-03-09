@@ -26,7 +26,7 @@ func GinLogger() gin.HandlerFunc {
 			"path":    c.Request.URL.Path,
 			"proto":   c.Request.Proto,
 			"latency": time.Since(start),
-		})
+		}).WithContext(c.Request.Context())
 
 		if len(c.Errors) > 0 {
 			entry.Error(c.Errors.ByType(gin.ErrorTypePrivate).String())

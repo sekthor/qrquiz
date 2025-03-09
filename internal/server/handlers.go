@@ -19,7 +19,7 @@ func (s *Server) QuizHandler(c *gin.Context) {
 
 	id := c.Param("id")
 
-	quiz, err := s.repo.GetQuiz(id)
+	quiz, err := s.repo.GetQuiz(c.Request.Context(), id)
 
 	if err != nil {
 		c.HTML(http.StatusNotFound, "404.html", gin.H{
@@ -52,7 +52,7 @@ func (s *Server) NewQuizHandler(c *gin.Context) {
 		return
 	}
 
-	if err := s.repo.Save(quiz); err != nil {
+	if err := s.repo.Save(c.Request.Context(), quiz); err != nil {
 		c.Status(http.StatusBadRequest)
 		return
 	}
@@ -94,7 +94,7 @@ func (s *Server) QuizlistHandler(c *gin.Context) {
 		page = 1
 	}
 
-	quiz, _ := s.repo.List(page, 100)
+	quiz, _ := s.repo.List(c.Request.Context(), page, 100)
 
 	c.HTML(http.StatusOK, "list.html", gin.H{
 		"Title":    "Quiz List",

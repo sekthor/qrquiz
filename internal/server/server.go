@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -8,10 +9,15 @@ import (
 	"github.com/sekthor/qrquiz/internal/config"
 	"github.com/sekthor/qrquiz/internal/repo"
 	"github.com/sekthor/qrquiz/internal/server/assets"
+	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Server struct {
-	repo repo.Repo
+	repo   repo.Repo
+	tracer trace.Tracer
 }
 
 func (s *Server) Run(config *config.Config) error {
@@ -23,12 +29,15 @@ func (s *Server) Run(config *config.Config) error {
 		s.repo = repo.NewInMemoryRepo()
 	}
 
+	s.tracer = otel.Tracer("server")
+
 	gin.SetMode(gin.ReleaseMode)
 
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.Use(GinLogger())
 
+	router.Use(otelgin.Middleware("qrquiz"))
 	router.HTMLRender = renderer()
 	router.StaticFS("/assets", http.FS(assets.Assets))
 
@@ -48,12 +57,15 @@ func (s *Server) Run(config *config.Config) error {
 	router.GET("/list/:page", s.QuizlistHandler)
 	router.GET("/qr", s.QrHandler)
 
+	// TODO: make interval configureable
+	logrus.Infof("deleting expired quizzes every %d minutes", 15)
 	go func() {
 		for {
-			s.repo.DeleteExpired()
+			s.repo.DeleteExpired(context.Background())
 			time.Sleep(time.Minute * 15)
 		}
 	}()
 
+	logrus.Infof("starting server, listening on '%s'", config.Listen)
 	return router.Run(config.Listen)
 }
