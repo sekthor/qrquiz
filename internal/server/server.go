@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -60,7 +61,7 @@ func (s *Server) Run(config *config.Config) error {
 	logrus.Infof("deleting expired quizzes every %d minutes", 15)
 	go func() {
 		for {
-			s.repo.DeleteExpired()
+			s.repo.DeleteExpired(context.Background())
 			time.Sleep(time.Minute * 15)
 		}
 	}()

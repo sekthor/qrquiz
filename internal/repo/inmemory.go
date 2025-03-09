@@ -1,24 +1,32 @@
 package repo
 
 import (
+	"context"
 	"time"
 
 	"github.com/sekthor/qrquiz/internal/domain"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 )
 
 var _ Repo = &inMemoryRepo{}
 
 type inMemoryRepo struct {
 	quizes []domain.Quiz
+	tracer trace.Tracer
 }
 
 func NewInMemoryRepo() *inMemoryRepo {
 	return &inMemoryRepo{
 		quizes: []domain.Quiz{},
+		tracer: otel.Tracer("repo"),
 	}
 }
 
-func (i *inMemoryRepo) GetQuiz(id string) (domain.Quiz, error) {
+func (i *inMemoryRepo) GetQuiz(ctx context.Context, id string) (domain.Quiz, error) {
+	_, span := i.tracer.Start(ctx, "inMemoryRepo.GetQuiz")
+	defer span.End()
+
 	for _, quiz := range i.quizes {
 		if quiz.ID == id {
 			return quiz, nil
@@ -27,12 +35,17 @@ func (i *inMemoryRepo) GetQuiz(id string) (domain.Quiz, error) {
 	return domain.Quiz{}, ErrQuizNotFound
 }
 
-func (i *inMemoryRepo) Save(quiz domain.Quiz) error {
+func (i *inMemoryRepo) Save(ctx context.Context, quiz domain.Quiz) error {
+	_, span := i.tracer.Start(ctx, "inMemoryRepo.Save")
+	defer span.End()
+
 	i.quizes = append(i.quizes, quiz)
 	return nil
 }
 
-func (i *inMemoryRepo) List(page int, size int) ([]domain.Quiz, error) {
+func (i *inMemoryRepo) List(ctx context.Context, page int, size int) ([]domain.Quiz, error) {
+	_, span := i.tracer.Start(ctx, "inMemoryRepo.List")
+	defer span.End()
 
 	start := (page - 1) * size
 	end := start + size
@@ -48,7 +61,10 @@ func (i *inMemoryRepo) List(page int, size int) ([]domain.Quiz, error) {
 	return i.quizes[start:end], nil
 }
 
-func (i *inMemoryRepo) DeleteExpired() error {
+func (i *inMemoryRepo) DeleteExpired(ctx context.Context) error {
+	_, span := i.tracer.Start(ctx, "inMemoryRepo.DeleteExpired")
+	defer span.End()
+
 	var unexpired []domain.Quiz
 	now := time.Now()
 	for _, quiz := range i.quizes {

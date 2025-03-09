@@ -1,11 +1,14 @@
 package repo
 
 import (
+	"context"
 	"log"
 	"time"
 
 	"github.com/sekthor/qrquiz/internal/domain"
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -14,7 +17,8 @@ import (
 var _ Repo = sqliteRepo{}
 
 type sqliteRepo struct {
-	db *gorm.DB
+	db     *gorm.DB
+	tracer trace.Tracer
 }
 
 func NewSqliteRepo() sqliteRepo {
@@ -24,7 +28,8 @@ func NewSqliteRepo() sqliteRepo {
 	}
 
 	repo := sqliteRepo{
-		db: db,
+		db:     db,
+		tracer: otel.Tracer("repo"),
 	}
 
 	err = repo.db.AutoMigrate(
@@ -41,7 +46,10 @@ func NewSqliteRepo() sqliteRepo {
 	return repo
 }
 
-func (s sqliteRepo) GetQuiz(id string) (domain.Quiz, error) {
+func (s sqliteRepo) GetQuiz(ctx context.Context, id string) (domain.Quiz, error) {
+	_, span := s.tracer.Start(ctx, "sqliteRepo.GetQuiz")
+	defer span.End()
+
 	var quiz domain.Quiz
 	result := s.db.Preload(clause.Associations).
 		Preload("Questions.Answers.Pixels").
@@ -49,25 +57,34 @@ func (s sqliteRepo) GetQuiz(id string) (domain.Quiz, error) {
 	return quiz, result.Error
 }
 
-func (s sqliteRepo) Save(quiz domain.Quiz) error {
+func (s sqliteRepo) Save(ctx context.Context, quiz domain.Quiz) error {
+	_, span := s.tracer.Start(ctx, "sqliteRepo.Save")
+	defer span.End()
+
 	return s.db.Save(&quiz).Error
 }
 
-func (s sqliteRepo) List(page int, size int) ([]domain.Quiz, error) {
+func (s sqliteRepo) List(ctx context.Context, page int, size int) ([]domain.Quiz, error) {
+	_, span := s.tracer.Start(ctx, "sqliteRepo.List")
+	defer span.End()
+
 	var list []domain.Quiz
 	result := s.db.Offset((page - 1) * size).Limit(size).Find(&list)
 	return list, result.Error
 }
 
-func (i sqliteRepo) DeleteExpired() error {
-	result := i.db.
+func (s sqliteRepo) DeleteExpired(ctx context.Context) error {
+	_, span := s.tracer.Start(ctx, "sqliteRepo.DeleteExpired")
+	defer span.End()
+
+	result := s.db.
 		Where("expires < ?", time.Now()).
 		Delete(&domain.Quiz{})
 
 	if result.RowsAffected != 0 {
-		logrus.Debugf("deleted %d expired quizzes", result.RowsAffected)
+		logrus.WithContext(ctx).Debugf("deleted %d expired quizzes", result.RowsAffected)
 	} else {
-		logrus.Debug("no expired quizzes to delete")
+		logrus.WithContext(ctx).Debug("no expired quizzes to delete")
 	}
 
 	return result.Error
