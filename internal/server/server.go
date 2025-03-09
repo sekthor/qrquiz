@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sekthor/qrquiz/internal/config"
@@ -28,7 +29,11 @@ func (s *Server) Run(config *config.Config) error {
 
 	s.tracer = otel.Tracer("server")
 
-	router := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+
+	router := gin.New()
+	router.Use(gin.Recovery())
+	router.Use(GinLogger())
 
 	router.Use(otelgin.Middleware("qrquiz"))
 	router.HTMLRender = renderer()
@@ -47,6 +52,15 @@ func (s *Server) Run(config *config.Config) error {
 	router.GET("/new/review", s.NewQuizReviewFormHandler)
 	router.POST("/new", s.NewQuizHandler)
 	router.GET("/list", s.QuizlistHandler)
+	router.GET("/list/:page", s.QuizlistHandler)
+	router.GET("/qr", s.QrHandler)
+
+	go func() {
+		for {
+			s.repo.DeleteExpired()
+			time.Sleep(time.Minute * 15)
+		}
+	}()
 
 	return router.Run(config.Listen)
 }

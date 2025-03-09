@@ -2,18 +2,18 @@
 
 <article>
     <h1>Available Quizzes</h1>
-    <table class="quizlist">
-        <tr style="background-color: #ddd;">
+    <table class="quizlist" style="font-size: small;">
+        <tr style="background-color: #444; color: white;">
             <td>Id</td>
             <td>Name</td>
-            <td>Link</td>
+            <td>Expires</td>
         </tr>
         {{ range .Quizlist }}
         {{ $link := printf "/quiz/%s" .ID }}
         <tr>
-            <td style="font-size: small;">{{ .ID }}</td>
-            <td style="width: 99%;">{{ .Title }}</td>
-            <td><a style="white-space: nowrap;" href="{{ $link }}">🔗 open</a></td>
+            <td>{{ .ID }}</td>
+            <td style="width: 99%;"><a style="white-space: nowrap;" href="{{ $link }}">{{ .Title }}</a></td>
+            <td>{{ .Expires.Format "02.03.2006" }}</td>
         </tr>
         {{ end }}
 

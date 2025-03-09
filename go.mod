@@ -6,6 +6,7 @@ require (
 	github.com/gin-contrib/multitemplate v1.1.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/nrednav/cuid2 v1.0.1
+	github.com/sirupsen/logrus v1.9.3
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/spf13/viper v1.19.0
 	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.60.0

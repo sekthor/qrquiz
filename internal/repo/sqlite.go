@@ -2,6 +2,7 @@ package repo
 
 import (
 	"log"
+	"time"
 
 	"github.com/sekthor/qrquiz/internal/domain"
 	"gorm.io/driver/sqlite"
@@ -16,7 +17,7 @@ type sqliteRepo struct {
 }
 
 func NewSqliteRepo() sqliteRepo {
-	db, err := gorm.Open(sqlite.Open("data/qrquiz.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("data/qrquiz.db"), &gorm.Config{Logger: NewLogger()})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,8 +52,15 @@ func (s sqliteRepo) Save(quiz domain.Quiz) error {
 	return s.db.Save(&quiz).Error
 }
 
-func (s sqliteRepo) List() ([]domain.Quiz, error) {
+func (s sqliteRepo) List(page int, size int) ([]domain.Quiz, error) {
 	var list []domain.Quiz
-	result := s.db.Find(&list)
+	result := s.db.Offset((page - 1) * size).Limit(size).Find(&list)
 	return list, result.Error
+}
+
+func (i sqliteRepo) DeleteExpired() error {
+	return i.db.
+		Where("expires < ?", time.Now()).
+		Delete(&domain.Quiz{}).
+		Error
 }

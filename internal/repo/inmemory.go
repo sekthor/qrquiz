@@ -1,6 +1,10 @@
 package repo
 
-import "github.com/sekthor/qrquiz/internal/domain"
+import (
+	"time"
+
+	"github.com/sekthor/qrquiz/internal/domain"
+)
 
 var _ Repo = &inMemoryRepo{}
 
@@ -28,6 +32,30 @@ func (i *inMemoryRepo) Save(quiz domain.Quiz) error {
 	return nil
 }
 
-func (i *inMemoryRepo) List() ([]domain.Quiz, error) {
-	return i.quizes, nil
+func (i *inMemoryRepo) List(page int, size int) ([]domain.Quiz, error) {
+
+	start := (page - 1) * size
+	end := start + size
+
+	if len(i.quizes) < start {
+		return []domain.Quiz{}, nil
+	}
+
+	if len(i.quizes) < end {
+		return i.quizes[start:], nil
+	}
+
+	return i.quizes[start:end], nil
+}
+
+func (i *inMemoryRepo) DeleteExpired() error {
+	var unexpired []domain.Quiz
+	now := time.Now()
+	for _, quiz := range i.quizes {
+		if quiz.Expires.Before(now) {
+			unexpired = append(unexpired, quiz)
+		}
+	}
+	i.quizes = unexpired
+	return nil
 }
