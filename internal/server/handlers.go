@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sekthor/qrquiz/internal/domain"
+	"github.com/skip2/go-qrcode"
 )
 
 func (s *Server) HomeHandler(c *gin.Context) {
@@ -84,4 +85,16 @@ func (s *Server) QuizlistHandler(c *gin.Context) {
 		"Title":    "Quiz List",
 		"Quizlist": quiz,
 	})
+}
+
+func (s *Server) QrHandler(c *gin.Context) {
+	data := c.Query("q")
+
+	png, err := qrcode.Encode(data, qrcode.Medium, 256)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	c.Data(http.StatusOK, "image/png", png)
 }

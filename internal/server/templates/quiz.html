@@ -3,7 +3,11 @@
 <article>
     <div class="flex">
         <div class="quiz">
-            <h1>{{ .Quiz.Title }}</h1>
+            <h1 style="margin-bottom: .5rem;">{{ .Quiz.Title }}</h1>
+            <div style="margin-bottom: 2rem; font-size: small;">
+                Copy <a href="" onclick="navigator.clipboard.writeText(window.location.href);">Link</a> or get <a href="#" id="qrlink">QR code</a> to quiz. 
+            </div>
+            
 
             {{ range $i, $question := .Quiz.Questions }}
             <div class="question">
@@ -36,5 +40,13 @@
         </div>
     </div>
 </article>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const link = document.getElementById("qrlink");
+    if (link) {
+        link.href = `/qr?q=${encodeURIComponent(window.location.href)}`;
+    }
+});
+</script>
 <script src="/assets/quiz.js"></script>
 {{ end }}
