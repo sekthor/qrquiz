@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/sekthor/qrquiz/internal/domain"
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -59,8 +60,15 @@ func (s sqliteRepo) List(page int, size int) ([]domain.Quiz, error) {
 }
 
 func (i sqliteRepo) DeleteExpired() error {
-	return i.db.
+	result := i.db.
 		Where("expires < ?", time.Now()).
-		Delete(&domain.Quiz{}).
-		Error
+		Delete(&domain.Quiz{})
+
+	if result.RowsAffected != 0 {
+		logrus.Debugf("deleted %d expired quizzes", result.RowsAffected)
+	} else {
+		logrus.Debug("no expired quizzes to delete")
+	}
+
+	return result.Error
 }

@@ -6,10 +6,16 @@ import (
 	"time"
 
 	"github.com/sekthor/qrquiz/internal/config"
+	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/contrib/bridges/otellogrus"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
@@ -45,6 +51,16 @@ func SetUpTelemetry(ctx context.Context, conf *config.Config, serviceName string
 	}
 	shutdownFuncs = append(shutdownFuncs, tracerProvider.Shutdown)
 	otel.SetTracerProvider(tracerProvider)
+
+	loggerProvider, err := loggerProvider(ctx, conf, serviceName)
+	if err != nil {
+		handleErr(err)
+		return
+	}
+	shutdownFuncs = append(shutdownFuncs, loggerProvider.Shutdown)
+	global.SetLoggerProvider(loggerProvider)
+	hook := otellogrus.NewHook("qrquiz", otellogrus.WithLoggerProvider(loggerProvider))
+	logrus.AddHook(hook)
 
 	return
 }
@@ -96,6 +112,46 @@ func newTraceExporter(ctx context.Context, conf *config.Config) (trace.SpanExpor
 
 	default:
 		exporter, err = stdouttrace.New(stdouttrace.WithPrettyPrint())
+	}
+
+	return exporter, err
+}
+
+func loggerProvider(ctx context.Context, conf *config.Config, serviceName string) (*log.LoggerProvider, error) {
+	exporter, err := newLoggingExporter(ctx, conf)
+	if err != nil {
+		return nil, err
+	}
+
+	resource, err := defaultResource(serviceName)
+	if err != nil {
+		return nil, err
+	}
+
+	processor := log.NewBatchProcessor(exporter, log.WithExportInterval(time.Second*time.Duration(conf.Otlp.Interval)))
+	loggingProvider := log.NewLoggerProvider(
+		log.WithResource(resource),
+		log.WithProcessor(processor),
+	)
+	return loggingProvider, nil
+}
+
+func newLoggingExporter(ctx context.Context, conf *config.Config) (log.Exporter, error) {
+	var exporter log.Exporter
+	var err error
+
+	switch conf.Otlp.Protocol {
+
+	case "grpc":
+		var options []otlploggrpc.Option
+		options = append(options, otlploggrpc.WithEndpoint(conf.Otlp.Endpoint))
+		if conf.Otlp.Insecure {
+			options = append(options, otlploggrpc.WithInsecure())
+		}
+		exporter, err = otlploggrpc.New(ctx, options...)
+
+	default:
+		exporter, err = stdoutlog.New()
 	}
 
 	return exporter, err

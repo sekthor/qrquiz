@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"os"
 
 	"github.com/sekthor/qrquiz/internal/config"
 	"github.com/sekthor/qrquiz/internal/server"
@@ -11,15 +10,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func init() {
-	logrus.SetFormatter(&logrus.JSONFormatter{})
-	logrus.SetOutput(os.Stdout)
-}
-
 func main() {
 	config, err := config.ReadConfig()
 	if err != nil {
-		log.Fatal(err)
+		logrus.WithField("error", err).Fatal("could not read config")
 	}
 
 	if config.Otlp.Enabled {
@@ -28,6 +22,7 @@ func main() {
 			log.Fatal(err)
 		}
 		defer shutdown(context.Background())
+		logrus.Info("set up opentelemetry")
 	}
 
 	// TODO: configre
