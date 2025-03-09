@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sekthor/qrquiz/internal/config"
@@ -42,6 +43,13 @@ func (s *Server) Run(config *config.Config) error {
 	router.GET("/list", s.QuizlistHandler)
 	router.GET("/list/:page", s.QuizlistHandler)
 	router.GET("/qr", s.QrHandler)
+
+	go func() {
+		for {
+			s.repo.DeleteExpired()
+			time.Sleep(time.Minute * 15)
+		}
+	}()
 
 	return router.Run(config.Listen)
 }

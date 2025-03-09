@@ -4,8 +4,12 @@
     <div class="flex">
         <div class="quiz">
             <h1 style="margin-bottom: .5rem;">{{ .Quiz.Title }}</h1>
-            <div style="margin-bottom: 2rem; font-size: small;">
-                Copy <a href="" onclick="navigator.clipboard.writeText(window.location.href);">Link</a> or get <a href="#" id="qrlink">QR code</a> to quiz. 
+            <div style="margin-bottom: 2rem; font-size: small; display: grid; gap:.25rem;">
+                <p style="margin: 0;">
+                    Copy <a href="" onclick="navigator.clipboard.writeText(window.location.href);">Link</a>
+                    or get <a href="#" id="qrlink">QR code</a> to quiz.
+                </p> 
+                <p style="margin: 0;">This quiz expires at <i>{{ .Quiz.Expires.Format "02. Aug 2006 15:04" }}</i></p>
             </div>
             
 

@@ -2,6 +2,7 @@ package repo
 
 import (
 	"log"
+	"time"
 
 	"github.com/sekthor/qrquiz/internal/domain"
 	"gorm.io/driver/sqlite"
@@ -55,4 +56,11 @@ func (s sqliteRepo) List(page int, size int) ([]domain.Quiz, error) {
 	var list []domain.Quiz
 	result := s.db.Offset((page - 1) * size).Limit(size).Find(&list)
 	return list, result.Error
+}
+
+func (i sqliteRepo) DeleteExpired() error {
+	return i.db.
+		Where("expires < ?", time.Now()).
+		Delete(&domain.Quiz{}).
+		Error
 }
