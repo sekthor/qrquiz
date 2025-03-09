@@ -17,7 +17,7 @@ type sqliteRepo struct {
 }
 
 func NewSqliteRepo() sqliteRepo {
-	db, err := gorm.Open(sqlite.Open("data/qrquiz.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("data/qrquiz.db"), &gorm.Config{Logger: NewLogger()})
 	if err != nil {
 		log.Fatal(err)
 	}
