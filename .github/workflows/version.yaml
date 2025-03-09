@@ -7,7 +7,7 @@ on:
 
 jobs:
   semantic-version:
-    name: Docker build
+    name: Semantic Version
     runs-on: ubuntu-latest
 
     permissions:
