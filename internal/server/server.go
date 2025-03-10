@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -39,7 +40,15 @@ func (s *Server) Run(config *config.Config) error {
 
 	router.Use(otelgin.Middleware("qrquiz"))
 	router.HTMLRender = renderer()
-	router.StaticFS("/assets", http.FS(assets.Assets))
+
+	// serve static assets with optional configurable cache policy
+	asset := router.Group("/assets")
+	if config.StaticCacheMaxAge != 0 {
+		asset.Use(func(c *gin.Context) {
+			c.Header("Cache-Control", fmt.Sprintf("max-age=%d", config.StaticCacheMaxAge))
+		})
+	}
+	asset.StaticFS("", http.FS(assets.Assets))
 
 	router.NoRoute(func(c *gin.Context) {
 		c.HTML(http.StatusNotFound, "404.html", gin.H{

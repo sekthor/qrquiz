@@ -17,6 +17,7 @@ type Config struct {
 		Interval int
 		Insecure bool
 	}
+	StaticCacheMaxAge int
 }
 
 func ReadConfig() (*Config, error) {
@@ -34,6 +35,7 @@ func ReadConfig() (*Config, error) {
 	viper.BindEnv("Database")
 	viper.BindEnv("Listen")
 	viper.BindEnv("Loglevel")
+	viper.BindEnv("StaticCacheMaxAge")
 
 	if err := viper.Unmarshal(&config); err != nil {
 		return &config, err
