@@ -3,6 +3,7 @@ package config
 import (
 	"strings"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -42,4 +43,23 @@ func ReadConfig() (*Config, error) {
 	}
 
 	return &config, nil
+}
+
+func (c Config) GetLoglevel() logrus.Level {
+	switch c.Loglevel {
+	case "trace":
+		return logrus.TraceLevel
+	case "debug":
+		return logrus.DebugLevel
+	case "warn":
+		return logrus.WarnLevel
+	case "error":
+		return logrus.ErrorLevel
+	case "fatal":
+		return logrus.FatalLevel
+	case "panic":
+		return logrus.PanicLevel
+	default:
+		return logrus.InfoLevel
+	}
 }
