@@ -132,5 +132,7 @@ async function submit() {
     if (response.ok) {
         let quiz = await response.json()
         window.location.href = `/quiz/${quiz.id}`
+    } else {
+        document.getElementById("error").innerHTML = `Error: ${(await response.json()).error}`
     }
 }

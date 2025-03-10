@@ -16,10 +16,6 @@ const (
 	DefaultExpiration = time.Hour * 24 * 30 * 3 // three months
 )
 
-var (
-	errEncodeQr = errors.New("could not encode data to qr code")
-)
-
 type Bitmap [][]bool
 
 type Quiz struct {

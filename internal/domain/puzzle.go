@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"math"
 	"math/rand"
 
 	"github.com/skip2/go-qrcode"
@@ -29,7 +28,7 @@ func NewPuzzle(secret string, questions []Question) (Puzzle, error) {
 	var puzzle Puzzle
 	qr, err := qrcode.New(secret, qrcode.Low)
 	if err != nil {
-		return puzzle, errEncodeQr
+		return puzzle, ErrEncodeQr
 	}
 
 	// get a bitmap without the quiet zone
@@ -95,6 +94,10 @@ func assignPixels(questions []Question, bitmap Bitmap) (Puzzle, error) {
 		}
 	}
 
+	if correctCount < 1 && wrongCount < 1 {
+		return puzzle, ErrNoAnswers
+	}
+
 	// will be filled with all pixels assigned to correct answers.
 	// these will be removed from the original QR bitmap
 	var subtractMask []Pixel
@@ -103,10 +106,18 @@ func assignPixels(questions []Question, bitmap Bitmap) (Puzzle, error) {
 	// correct answers and unset for wrong ones, we distribute the pixels to the
 	// respective answer amount. The amount per answer is the smaller of the results
 	// as this will work for both.
-	pixelsPerAnswer := int(math.Min(
-		float64(len(pixels.Set)/correctCount),
-		float64(len(pixels.Unset)/wrongCount),
-	))
+	var pixelsPerAnswer int
+
+	if correctCount > 0 {
+		pixelsPerAnswer = len(pixels.Set) / correctCount
+	}
+
+	if wrongCount > 0 {
+		tmp := len(pixels.Unset) / wrongCount
+		if tmp < pixelsPerAnswer {
+			pixelsPerAnswer = tmp
+		}
+	}
 
 	if pixelsPerAnswer < 1 {
 		return puzzle, ErrTooManyAnswers

@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sekthor/qrquiz/internal/domain"
+	"github.com/sirupsen/logrus"
 	"github.com/skip2/go-qrcode"
 )
 
@@ -22,6 +23,9 @@ func (s *Server) QuizHandler(c *gin.Context) {
 	quiz, err := s.repo.GetQuiz(c.Request.Context(), id)
 
 	if err != nil {
+		logrus.WithContext(c.Request.Context()).
+			WithError(err).
+			Debug("could not get quiz from db")
 		c.HTML(http.StatusNotFound, "404.html", gin.H{
 			"Title": "Quiz",
 		})
@@ -42,18 +46,27 @@ func (s *Server) NewQuizHandler(c *gin.Context) {
 	}
 
 	if err := c.Bind(&req); err != nil {
-		c.Status(http.StatusBadRequest)
+		logrus.WithContext(c.Request.Context()).
+			WithError(err).
+			Debug("could not unmarshal quiz")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "could not unmarshal quiz"})
 		return
 	}
 
 	quiz, err := domain.NewQuiz(req.Title, req.Secret, req.Questions)
 	if err != nil {
-		c.Status(http.StatusBadRequest)
+		logrus.WithContext(c.Request.Context()).
+			WithError(err).
+			Debug("could not create new quiz")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := s.repo.Save(c.Request.Context(), quiz); err != nil {
-		c.Status(http.StatusBadRequest)
+		logrus.WithContext(c.Request.Context()).
+			WithError(err).
+			Debug("could not save new quiz")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "could not save new quiz"})
 		return
 	}
 
@@ -86,6 +99,9 @@ func (s *Server) QuizlistHandler(c *gin.Context) {
 
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
+		logrus.WithContext(c.Request.Context()).
+			WithError(err).
+			Debug("could not convert :page path param to integer")
 		c.Status(http.StatusBadRequest)
 		return
 	}
@@ -107,6 +123,9 @@ func (s *Server) QrHandler(c *gin.Context) {
 
 	png, err := qrcode.Encode(data, qrcode.Medium, 256)
 	if err != nil {
+		logrus.WithContext(c.Request.Context()).
+			WithError(err).
+			Debug("could not encode query to qr code")
 		c.Status(http.StatusBadRequest)
 		return
 	}
