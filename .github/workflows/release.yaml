@@ -36,3 +36,7 @@ jobs:
         tags: |
           sekthor/qrquiz:latest
           sekthor/qrquiz:${{ steps.semantic.outputs.new_release_version }}
+        build-args: |
+          BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          GIT_COMMIT=${{ steps.semantic.outputs.new_release_git_head }}
+          VERSION=${{ steps.semantic.outputs.new_release_version }}
