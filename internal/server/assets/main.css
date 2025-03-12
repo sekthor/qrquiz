@@ -13,10 +13,38 @@
     max-width: 500px;
 }
 
+html, body {
+    height: 100%; 
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    padding: 1rem;
+}
+
 article {
     max-width: 800px;
     margin: auto;
     margin-top: 2rem;
+}
+
+article h1 {
+    font-size: 2rem;
+}
+
+footer {
+    font-size: small;
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border-top: 1px #ddd solid;
 }
 
 input[type=text] {
