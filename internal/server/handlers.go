@@ -132,3 +132,12 @@ func (s *Server) QrHandler(c *gin.Context) {
 
 	c.Data(http.StatusOK, "image/png", png)
 }
+
+func (s *Server) ImprintHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "imprint.html", gin.H{
+		"Title":   "Imprint",
+		"Version": tag,
+		"Commit":  commit,
+		"Date":    date,
+	})
+}

@@ -65,6 +65,7 @@ func (s *Server) Run(config *config.Config) error {
 	router.GET("/list", s.QuizlistHandler)
 	router.GET("/list/:page", s.QuizlistHandler)
 	router.GET("/qr", s.QrHandler)
+	router.GET("/imprint", s.ImprintHandler)
 
 	// TODO: make interval configureable
 	logrus.Infof("deleting expired quizzes every %d minutes", 15)

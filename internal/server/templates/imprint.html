@@ -1,0 +1,22 @@
+{{ define "main.html" }}
+<article>
+    <h1>Imprint</h1>
+
+    <p>
+        This is an app created out of the silly idea of "QR code for self-assembly".
+        It was created by <a href="github.com/sektor">sekthor</a>.
+    </p>
+
+    <table style="font-size: small;">
+        <tr><td style="font-weight: 600;">Version</td><td>{{ .Version }}</td></tr>
+        <tr><td style="font-weight: 600;">Commit</td><td>{{ .Commit }}</td></tr>
+        <tr><td style="font-weight: 600;">Build Date</td><td>{{ .Date }}</td></tr>
+    </table>
+
+    <h2>Aknowledgements</h2>
+    <ul>
+        <li>Various Golang libraries listed in the <a href="https://raw.githubusercontent.com/sekthor/qrquiz/refs/heads/main/go.mod">go.mod</a> file.</li>
+        <li>Icons  <a href="https://openmoji.org">openmoji</a> (CC)</li>
+    </ul>
+</article>
+{{ end }}
