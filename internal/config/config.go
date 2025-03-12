@@ -19,6 +19,13 @@ type Config struct {
 		Insecure bool
 	}
 	StaticCacheMaxAge int
+	Contact           struct {
+		Enabled      bool
+		GeneralName  string
+		GeneralEmail string
+		AbuseName    string
+		AbuseEmail   string
+	}
 }
 
 func ReadConfig() (*Config, error) {
@@ -37,6 +44,11 @@ func ReadConfig() (*Config, error) {
 	viper.BindEnv("Listen")
 	viper.BindEnv("Loglevel")
 	viper.BindEnv("StaticCacheMaxAge")
+	viper.BindEnv("Contact.Enabled")
+	viper.BindEnv("Contact.AbuseEmail")
+	viper.BindEnv("Contact.AbuseName")
+	viper.BindEnv("Contact.GeneralEmail")
+	viper.BindEnv("Contact.GeneralName")
 
 	if err := viper.Unmarshal(&config); err != nil {
 		return &config, err

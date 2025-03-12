@@ -139,5 +139,6 @@ func (s *Server) ImprintHandler(c *gin.Context) {
 		"Version": tag,
 		"Commit":  commit,
 		"Date":    date,
+		"Contact": s.config.Contact,
 	})
 }

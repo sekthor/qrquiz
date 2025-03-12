@@ -17,11 +17,14 @@ import (
 )
 
 type Server struct {
+	config *config.Config
 	repo   repo.Repo
 	tracer trace.Tracer
 }
 
 func (s *Server) Run(config *config.Config) error {
+
+	s.config = config
 
 	switch config.Database {
 	case "sqlite":

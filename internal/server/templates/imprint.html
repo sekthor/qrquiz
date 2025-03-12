@@ -1,22 +1,69 @@
 {{ define "main.html" }}
+<style>
+h2 {
+    margin-top: 3rem;
+}
+</style>
+
 <article>
     <h1>Imprint</h1>
 
-    <p>
-        This is an app created out of the silly idea of "QR code for self-assembly".
-        It was created by <a href="github.com/sektor">sekthor</a>.
-    </p>
-
     <table style="font-size: small;">
-        <tr><td style="font-weight: 600;">Version</td><td>{{ .Version }}</td></tr>
-        <tr><td style="font-weight: 600;">Commit</td><td>{{ .Commit }}</td></tr>
-        <tr><td style="font-weight: 600;">Build Date</td><td>{{ .Date }}</td></tr>
+        <tr>
+            <td style="font-weight: 600;">Version</td>
+            <td><a href="https://github.com/sekthor/qrquiz/releases/tag/{{ .Version }}">{{ .Version }}</a></td>
+        </tr>
+        <tr>
+            <td style="font-weight: 600;">Commit</td>
+            <td>{{ .Commit }}</td>
+        </tr>
+        <tr>
+            <td style="font-weight: 600;">Build Date</td>
+            <td>{{ .Date }}</td>
+        </tr>
     </table>
 
+    <p>This app was created by <a href="https://github.com/sekthor">sekthor</a>.</p>
+    
+    <h2>Privacy / Cookies</h2>
+    <p>
+        This application does not employ user-tracking technologies, including but not limited to cookies that store personally identifiable information. 
+        No personal data is collected, stored, or processed beyond the information you voluntarily submit through the quiz form and standard server logs* necessary for technical and security purposes.
+    </p>
+    <p>
+        Please note that all quizzes are publicly accessible. Do not include any personal, confidential, or sensitive information when creating quizzes.
+    </p>
+    <p style="font-size: smaller;">* Including IP addresses and request metadata</p>
+    
     <h2>Aknowledgements</h2>
+    <p>The following list of open source resources were used to build this app:</p>
     <ul>
         <li>Various Golang libraries listed in the <a href="https://raw.githubusercontent.com/sekthor/qrquiz/refs/heads/main/go.mod">go.mod</a> file.</li>
-        <li>Icons  <a href="https://openmoji.org">openmoji</a> (CC)</li>
+        <li>Icons taken from <a href="https://openmoji.org">openmoji</a> (<a href="https://creativecommons.org/licenses/by-sa/4.0/">BY-SA 4.0</a>)</li>
     </ul>
+
+    {{ with .Contact }} 
+    {{ if .Enabled }}
+    <h2>Contact</h2>
+        <div>General Email: <a href="mailto:{{ .GeneralEmail }}">{{ .GeneralName }}</a></div>
+        <div>Report Abuse: <a href="mailto:{{ .AbuseEmail }}">{{ .AbuseName }}</a></div>
+    {{ end }}
+    {{ end }}
+
+    <h2>Abuse / Acceptable Use</h2>
+    <p>
+        We do not tolerate any form of illegal content, discriminatory language, harassment, or unethical behavior on this platform. 
+        This includes, but is not limited to, content that is defamatory, hateful, threatening, violent, or otherwise violates the rights and dignity of others.
+    </p>
+    <p>
+        By using this application, you agree to refrain from submitting or distributing any content that could be considered abusive, harmful, or unlawful. 
+        We reserve the right to remove such content without notice and take appropriate action, including reporting to relevant authorities where necessary.
+    </p>
+    {{ with .Contact }} 
+    {{ if .Enabled }}
+        <p>Please report Violations and Abuse here: <a href="mailto:{{ .AbuseEmail }}">{{ .AbuseName }}</a></p>
+    {{ end }}
+    {{ end }}
+
 </article>
 {{ end }}
