@@ -3,7 +3,7 @@ RUN apk add --no-cache git build-base
 WORKDIR /app
 COPY ./ ./
 
-ARG BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+ARG BUILD_DATE
 ARG GIT_COMMIT
 ARG VERSION
 
