@@ -51,33 +51,37 @@ func (s sqliteRepo) GetQuiz(ctx context.Context, id string) (domain.Quiz, error)
 	defer span.End()
 
 	var quiz domain.Quiz
-	result := s.db.Preload(clause.Associations).
+	result := s.db.WithContext(ctx).
+		Preload(clause.Associations).
 		Preload("Questions.Answers.Pixels").
 		First(&quiz, "id = ?", id)
 	return quiz, result.Error
 }
 
 func (s sqliteRepo) Save(ctx context.Context, quiz domain.Quiz) error {
-	_, span := s.tracer.Start(ctx, "sqliteRepo.Save")
+	ctx, span := s.tracer.Start(ctx, "sqliteRepo.Save")
 	defer span.End()
 
-	return s.db.Save(&quiz).Error
+	return s.db.WithContext(ctx).Save(&quiz).Error
 }
 
 func (s sqliteRepo) List(ctx context.Context, page int, size int) ([]domain.Quiz, error) {
-	_, span := s.tracer.Start(ctx, "sqliteRepo.List")
+	ctx, span := s.tracer.Start(ctx, "sqliteRepo.List")
 	defer span.End()
 
 	var list []domain.Quiz
-	result := s.db.Offset((page - 1) * size).Limit(size).Find(&list)
+	result := s.db.WithContext(ctx).
+		Offset((page - 1) * size).
+		Limit(size).Find(&list)
 	return list, result.Error
 }
 
 func (s sqliteRepo) DeleteExpired(ctx context.Context) error {
-	_, span := s.tracer.Start(ctx, "sqliteRepo.DeleteExpired")
+	ctx, span := s.tracer.Start(ctx, "sqliteRepo.DeleteExpired")
 	defer span.End()
 
 	result := s.db.
+		WithContext(ctx).
 		Where("expires < ?", time.Now()).
 		Delete(&domain.Quiz{})
 
