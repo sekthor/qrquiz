@@ -8,9 +8,9 @@ ARG GIT_COMMIT
 ARG VERSION
 
 RUN go build -o qrquiz \
-    -ldflags="-X 'github.com/sekthor/qrquiz/internal/server.date=${BUILD_DATE}' \
-        -X 'github.com/sekthor/qrquiz/internal/server.commit=${GIT_COMMIT}' \
-        -X 'github.com/sekthor/qrquiz/internal/server.tag=${VERSION}'" \
+    -ldflags="-X 'github.com/sekthor/qrquiz/internal/config.Date=${BUILD_DATE}' \
+        -X 'github.com/sekthor/qrquiz/internal/config.Commit=${GIT_COMMIT}' \
+        -X 'github.com/sekthor/qrquiz/internal/config.Version=${VERSION}'" \
     ./cmd/main.go
 
 FROM alpine:latest AS final

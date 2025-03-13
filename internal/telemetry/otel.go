@@ -84,7 +84,7 @@ func defaultResource(serviceName string) (*resource.Resource, error) {
 		resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceName(serviceName),
-			semconv.ServiceVersion("1.5.3"),
+			semconv.ServiceVersion(config.Version),
 		),
 	)
 }

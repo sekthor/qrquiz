@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sekthor/qrquiz/internal/config"
 	"github.com/sekthor/qrquiz/internal/domain"
 	"github.com/sirupsen/logrus"
 	"github.com/skip2/go-qrcode"
@@ -136,9 +137,9 @@ func (s *Server) QrHandler(c *gin.Context) {
 func (s *Server) ImprintHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "imprint.html", gin.H{
 		"Title":   "Imprint",
-		"Version": tag,
-		"Commit":  commit,
-		"Date":    date,
+		"Version": config.Version,
+		"Commit":  config.Commit,
+		"Date":    config.Date,
 		"Contact": s.config.Contact,
 	})
 }

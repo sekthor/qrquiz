@@ -43,4 +43,4 @@ jobs:
         build-args: |
           BUILD_DATE=${{ steps.build_date.outputs.date }}
           GIT_COMMIT=${{ steps.semantic.outputs.new_release_git_head }}
-          VERSION=${{ steps.semantic.outputs.new_release_version }}
+          VERSION=v${{ steps.semantic.outputs.new_release_version }}
