@@ -39,9 +39,9 @@ func (s *Server) Run(config *config.Config) error {
 
 	router := gin.New()
 	router.Use(gin.Recovery())
+	router.Use(otelgin.Middleware("qrquiz"))
 	router.Use(GinLogger())
 
-	router.Use(otelgin.Middleware("qrquiz"))
 	router.HTMLRender = renderer()
 
 	// serve static assets with optional configurable cache policy
@@ -74,8 +74,12 @@ func (s *Server) Run(config *config.Config) error {
 	logrus.Infof("deleting expired quizzes every %d minutes", 15)
 	go func() {
 		for {
-			s.repo.DeleteExpired(context.Background())
-			time.Sleep(time.Minute * 15)
+			func() {
+				ctx, span := s.tracer.Start(context.Background(), "deleteExpired")
+				defer span.End()
+				s.repo.DeleteExpired(ctx)
+				time.Sleep(time.Minute * 15)
+			}()
 		}
 	}()
 

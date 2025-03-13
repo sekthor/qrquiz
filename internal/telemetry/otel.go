@@ -10,12 +10,15 @@ import (
 	"go.opentelemetry.io/contrib/bridges/otellogrus"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
+	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/log/global"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/log"
+	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
@@ -44,6 +47,7 @@ func SetUpTelemetry(ctx context.Context, conf *config.Config, serviceName string
 	)
 	otel.SetTextMapPropagator(prop)
 
+	// Tracing
 	tracerProvider, err := tracerProvider(ctx, conf, serviceName)
 	if err != nil {
 		handleErr(err)
@@ -52,6 +56,7 @@ func SetUpTelemetry(ctx context.Context, conf *config.Config, serviceName string
 	shutdownFuncs = append(shutdownFuncs, tracerProvider.Shutdown)
 	otel.SetTracerProvider(tracerProvider)
 
+	// Logging
 	loggerProvider, err := loggerProvider(ctx, conf, serviceName)
 	if err != nil {
 		handleErr(err)
@@ -62,6 +67,15 @@ func SetUpTelemetry(ctx context.Context, conf *config.Config, serviceName string
 	hook := otellogrus.NewHook("qrquiz", otellogrus.WithLoggerProvider(loggerProvider))
 	logrus.AddHook(hook)
 
+	// Metrics
+	meterProvider, err := newMeterProvider(ctx, conf, serviceName)
+	if err != nil {
+		handleErr(err)
+		return
+	}
+	shutdownFuncs = append(shutdownFuncs, meterProvider.Shutdown)
+	otel.SetMeterProvider(meterProvider)
+
 	return
 }
 
@@ -70,8 +84,7 @@ func defaultResource(serviceName string) (*resource.Resource, error) {
 		resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceName(serviceName),
-			// TODO: inject the service version
-			// semconv.ServiceVersion(serviceVersion)
+			semconv.ServiceVersion(config.Version),
 		),
 	)
 }
@@ -152,6 +165,47 @@ func newLoggingExporter(ctx context.Context, conf *config.Config) (log.Exporter,
 
 	default:
 		exporter, err = stdoutlog.New()
+	}
+
+	return exporter, err
+}
+
+func newMeterProvider(ctx context.Context, conf *config.Config, serviceName string) (*metric.MeterProvider, error) {
+	exporter, err := newMetricExporter(ctx, conf)
+	if err != nil {
+		return nil, err
+	}
+
+	resource, err := defaultResource(serviceName)
+	if err != nil {
+		return nil, err
+	}
+
+	meterProvider := metric.NewMeterProvider(
+		metric.WithResource(resource),
+		metric.WithReader(metric.NewPeriodicReader(exporter,
+			metric.WithInterval(time.Duration(conf.Otlp.Interval)*time.Second))),
+	)
+
+	return meterProvider, nil
+}
+
+func newMetricExporter(ctx context.Context, conf *config.Config) (metric.Exporter, error) {
+	var exporter metric.Exporter
+	var err error
+
+	switch conf.Otlp.Protocol {
+
+	case "grpc":
+		var options []otlpmetricgrpc.Option
+		options = append(options, otlpmetricgrpc.WithEndpoint(conf.Otlp.Endpoint))
+		if conf.Otlp.Insecure {
+			options = append(options, otlpmetricgrpc.WithInsecure())
+		}
+		exporter, err = otlpmetricgrpc.New(ctx, options...)
+
+	default:
+		exporter, err = stdoutmetric.New()
 	}
 
 	return exporter, err
