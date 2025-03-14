@@ -45,8 +45,8 @@ h2 {
     {{ with .Contact }} 
     {{ if .Enabled }}
     <h2>Contact</h2>
-        <div>General Email: <a href="mailto:{{ .GeneralEmail }}">{{ .GeneralName }}</a></div>
-        <div>Report Abuse: <a href="mailto:{{ .AbuseEmail }}">{{ .AbuseName }}</a></div>
+        <div>General Email: <a href="mailto:{{ .GeneralEmail }}?subject=QrQuiz:%20Inquiry">{{ .GeneralName }}</a></div>
+        <div>Report Abuse: <a href="mailto:{{ .AbuseEmail }}?subject=QrQuiz:%20Abuse%20Report">{{ .AbuseName }}</a></div>
     {{ end }}
     {{ end }}
 
@@ -61,7 +61,7 @@ h2 {
     </p>
     {{ with .Contact }} 
     {{ if .Enabled }}
-        <p>Please report Violations and Abuse here: <a href="mailto:{{ .AbuseEmail }}">{{ .AbuseName }}</a></p>
+        <p>Please report Violations and Abuse here: <a href="mailto:{{ .AbuseEmail }}?subject=QrQuiz:%20Abuse%20Report">{{ .AbuseName }}</a></p>
     {{ end }}
     {{ end }}
 
