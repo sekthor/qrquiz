@@ -1,0 +1,27 @@
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    env_file:
+      - .env
+    volumes:
+      - ./config.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - 127.0.0.1:4317:4317
+  qrquiz:
+    image: sekthor/qrquiz:latest
+    build: .
+    ports:
+      - 8080:8080
+    volumes:
+      - ./qrquiz-data:/app/data
+    environment:
+      DATABASE: "sqlite"
+      LISTEN: 0.0.0.0:8080
+      CONTACT_ENABLED: "true"
+      CONTACT_ABUSEEMAIL: ""
+      CONTACT_ABUSENAME: "QR Quiz Abuse"
+      CONTACT_GENERALEMAIL: ""
+      CONTACT_GENERALNAME: "OR Quiz Inquiries"
+      OTLP_ENABLED: "true"
+      OTLP_ENDPOINT: "otel-collector:4317"
+      STATICCACHEMAXAGE: "86400"

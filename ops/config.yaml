@@ -1,0 +1,78 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+  hostmetrics:
+    scrapers:
+      load:
+      memory:
+        metrics:
+          system.memory.utilization:
+            enabled: true
+          system.memory.limit:
+            enabled: true
+          system.linux.memory.available:
+            enabled: true
+      disk:
+      filesystem:
+      network:
+
+processors:
+  batch:
+
+exporters:
+  debug:
+  otlphttp/grafana_cloud:
+    endpoint: "${env:GRAFANA_CLOUD_OTLP_ENDPOINT}"
+    auth:
+      authenticator: basicauth/grafana_cloud
+    
+extensions:
+  basicauth/grafana_cloud:
+    client_auth:
+      username: "${env:GRAFANA_CLOUD_INSTANCE_ID}"
+      password: "${env:GRAFANA_CLOUD_API_KEY}"
+
+connectors:
+  grafanacloud:
+    host_identifiers: ["host.name"]
+
+service:
+  extensions:
+      - basicauth/grafana_cloud
+  pipelines:
+    traces:
+      receivers: 
+        - otlp
+      processors:
+        - batch
+      exporters:
+        - otlphttp/grafana_cloud
+        - grafanacloud
+        - debug
+    metrics:
+      receivers:
+        - otlp
+        - hostmetrics
+      processors:
+        - batch
+      exporters: 
+        - debug
+        - otlphttp/grafana_cloud
+    metrics/grafanacloud:
+      receivers: 
+        - grafanacloud
+      processors: 
+        - batch
+      exporters: 
+        - debug
+        - otlphttp/grafana_cloud
+    logs:
+      receivers: 
+        - otlp
+      processors:
+        - batch
+      exporters: 
+        - debug
+        - otlphttp/grafana_cloud
