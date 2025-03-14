@@ -26,6 +26,10 @@ type Config struct {
 		AbuseName    string
 		AbuseEmail   string
 	}
+	Admin struct {
+		Password string
+		User     string
+	}
 }
 
 func ReadConfig() (*Config, error) {
@@ -49,6 +53,8 @@ func ReadConfig() (*Config, error) {
 	viper.BindEnv("Contact.AbuseName")
 	viper.BindEnv("Contact.GeneralEmail")
 	viper.BindEnv("Contact.GeneralName")
+	viper.BindEnv("Admin.User")
+	viper.BindEnv("Admin.Password")
 
 	if err := viper.Unmarshal(&config); err != nil {
 		return &config, err

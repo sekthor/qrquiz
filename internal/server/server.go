@@ -65,8 +65,8 @@ func (s *Server) Run(config *config.Config) error {
 	router.GET("/new/question", s.NewQuestionFormHandler)
 	router.GET("/new/review", s.NewQuizReviewFormHandler)
 	router.POST("/new", s.NewQuizHandler)
-	router.GET("/list", s.QuizlistHandler)
-	router.GET("/list/:page", s.QuizlistHandler)
+	router.GET("/list", requiresAdmin(s.config), s.QuizlistHandler)
+	router.GET("/list/:page", requiresAdmin(s.config), s.QuizlistHandler)
 	router.GET("/qr", s.QrHandler)
 	router.GET("/imprint", s.ImprintHandler)
 
