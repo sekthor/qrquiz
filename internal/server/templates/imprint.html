@@ -15,11 +15,11 @@ h2 {
         </tr>
         <tr>
             <td style="font-weight: 600;">Commit</td>
-            <td>{{ .Commit }}</td>
+            <td><a href="https://github.com/sekthor/qrquiz/commit/{{ .Commit }}">{{ .Commit }}</a></td>
         </tr>
         <tr>
             <td style="font-weight: 600;">Build Date</td>
-            <td>{{ .Date }}</td>
+            <td><a href="https://github.com/sekthor/qrquiz/commit/{{ .Commit }}/checks"></a>{{ .Date }}</td>
         </tr>
     </table>
 
@@ -35,7 +35,7 @@ h2 {
     </p>
     <p style="font-size: smaller;">* Including IP addresses and request metadata</p>
     
-    <h2>Aknowledgements</h2>
+    <h2>Acknowledgements</h2>
     <p>The following list of open source resources were used to build this app:</p>
     <ul>
         <li>Various Golang libraries listed in the <a href="https://raw.githubusercontent.com/sekthor/qrquiz/refs/heads/main/go.mod">go.mod</a> file.</li>
