@@ -3,6 +3,7 @@ package config
 import (
 	"strings"
 
+	"github.com/nrednav/cuid2"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -25,6 +26,11 @@ type Config struct {
 		GeneralEmail string
 		AbuseName    string
 		AbuseEmail   string
+	}
+	Admin struct {
+		Password string
+		User     string
+		Disabled bool
 	}
 }
 
@@ -49,6 +55,11 @@ func ReadConfig() (*Config, error) {
 	viper.BindEnv("Contact.AbuseName")
 	viper.BindEnv("Contact.GeneralEmail")
 	viper.BindEnv("Contact.GeneralName")
+	viper.BindEnv("Admin.User")
+	viper.BindEnv("Admin.Password")
+	viper.BindEnv("Admin.Disabled")
+	viper.SetDefault("Admin.User", "admin")
+	viper.SetDefault("Admin.Password", cuid2.Generate()) // prevent misconfig empty password -> random password
 
 	if err := viper.Unmarshal(&config); err != nil {
 		return &config, err
