@@ -40,6 +40,7 @@ func (s *Server) Run(config *config.Config) error {
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.Use(otelgin.Middleware("qrquiz"))
+	router.Use(RequestCounter())
 	router.Use(GinLogger())
 
 	router.HTMLRender = renderer()
@@ -72,14 +73,19 @@ func (s *Server) Run(config *config.Config) error {
 
 	// TODO: make interval configureable
 	logrus.Infof("deleting expired quizzes every %d minutes", 15)
+	ticker := time.Tick(time.Second * 15)
 	go func() {
 		for {
-			func() {
+			select {
+			case <-ticker:
 				ctx, span := s.tracer.Start(context.Background(), "deleteExpired")
 				defer span.End()
-				s.repo.DeleteExpired(ctx)
-				time.Sleep(time.Minute * 15)
-			}()
+				if err := s.repo.DeleteExpired(ctx); err != nil {
+					logrus.WithContext(ctx).WithError(err).Error("could not delete expired quizzes")
+				} else {
+					logrus.WithContext(ctx).Info("delete expired quizzes")
+				}
+			}
 		}
 	}()
 
