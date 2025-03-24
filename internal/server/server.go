@@ -73,7 +73,7 @@ func (s *Server) Run(config *config.Config) error {
 
 	// TODO: make interval configureable
 	logrus.Infof("deleting expired quizzes every %d minutes", 15)
-	ticker := time.Tick(time.Second * 15)
+	ticker := time.Tick(time.Minute * 15)
 	go func() {
 		for {
 			select {
