@@ -120,10 +120,8 @@ func (b *Bitmap) Scan(value interface{}) error {
 	if !ok {
 		return errors.New("failed to convert database value to []byte")
 	}
-	length := len(bytes)
-	size := int(math.Sqrt(float64(length)))
-
-	if size*size != length {
+	ok, size := validatePerfectSquare(bytes)
+	if !ok {
 		return errors.New("length of byte array is not perfect square")
 	}
 
@@ -141,4 +139,11 @@ func (b *Bitmap) Scan(value interface{}) error {
 	}
 	*b = tmp
 	return nil
+}
+
+func validatePerfectSquare(bytes []byte) (bool, int) {
+	length := len(bytes)
+	size := int(math.Sqrt(float64(length)))
+
+	return (size*size == length), size
 }
