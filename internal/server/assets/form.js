@@ -12,8 +12,36 @@ function addQuestion() {
     
     localStorage.setItem("questions", JSON.stringify(questions))
     localStorage.setItem("answers", JSON.stringify([]))
+    displayQuestions();
     clearQuestion();
     displayAnswers();
+}
+
+function displayQuestions() {
+
+    let questions = JSON.parse(localStorage.getItem("questions"))
+    let list = document.getElementById("questionlist")
+
+    let items = ""
+    questions.forEach(question => {
+        items += `
+        <li>
+            <div style='display:flex; justify-content: space-between;'>
+                ${question.question}
+                <button onclick='removeQuestion(\"${question.question}\")' style="background-color: red;">remove</button>
+            </div>
+        </li>`
+    })
+
+    list.innerHTML = `<ol>${items}</ol>`
+}
+
+function removeQuestion(question) {
+    let questions = JSON.parse(localStorage.getItem("questions"))
+    questions = questions.filter(q => q.question !== question)
+    localStorage.setItem("questions", JSON.stringify(questions))
+    console.log(questions)
+    displayQuestions();
 }
 
 function addAnswer() {
@@ -135,4 +163,9 @@ async function submit() {
     } else {
         document.getElementById("error").innerHTML = `Error: ${(await response.json()).error}`
     }
+}
+
+function init() {
+    displayAnswers();
+    displayQuestions();
 }
