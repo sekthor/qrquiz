@@ -40,7 +40,6 @@ function removeQuestion(question) {
     let questions = JSON.parse(localStorage.getItem("questions"))
     questions = questions.filter(q => q.question !== question)
     localStorage.setItem("questions", JSON.stringify(questions))
-    console.log(questions)
     displayQuestions();
 }
 
