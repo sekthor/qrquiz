@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"math"
 	"time"
 
 	"github.com/nrednav/cuid2"
@@ -101,7 +102,17 @@ func (a Answer) MarshalJSON() ([]byte, error) {
 // TODO: implement the valuer & scanner interface in a less
 // "verbose" and more performant way than JSON
 func (b Bitmap) Value() (driver.Value, error) {
-	return json.Marshal(b)
+	values := []byte{}
+	for _, row := range b {
+		for _, value := range row {
+			if value {
+				values = append(values, 0x01)
+			} else {
+				values = append(values, 0x00)
+			}
+		}
+	}
+	return values, nil
 }
 
 func (b *Bitmap) Scan(value interface{}) error {
@@ -109,5 +120,25 @@ func (b *Bitmap) Scan(value interface{}) error {
 	if !ok {
 		return errors.New("failed to convert database value to []byte")
 	}
-	return json.Unmarshal(bytes, b)
+	length := len(bytes)
+	size := int(math.Sqrt(float64(length)))
+
+	if size*size != length {
+		return errors.New("length of byte array is not perfect square")
+	}
+
+	tmp := Bitmap{}
+	for i := range size {
+		row := []bool{}
+		for j := range size {
+			if bytes[(i*size)+j] == 0 {
+				row = append(row, false)
+			} else {
+				row = append(row, true)
+			}
+		}
+		tmp = append(tmp, row)
+	}
+	*b = tmp
+	return nil
 }
