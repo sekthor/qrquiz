@@ -1,11 +1,11 @@
-# qrquiz
+# QR Codes for self-assembly
 
-I have a lot of silly ideas.
-This is one of them:
+> A silly app, that corrupts a QR code containing a secret.
+> To reveal it, you must reassemble the QR by correctly solving a quiz.
 
-> "Solve a quiz, where the answers you give affect the pixels of a QR code. If it scans, you solved it correctly."
+## How it works
 
-This app
+This app...
 
 - allows you to create a quiz
   - with multiple choice answers
@@ -14,7 +14,7 @@ This app
 - corrupts the QR code by "stealing" some of it's pixels and assigning them to correct answers
 - assignes not-needed pixels to wrong answers
 
-this means
+This means:
 
 - giving right answers, "reassembles" the QR code
 - wrong answers further corrupt the QR code
